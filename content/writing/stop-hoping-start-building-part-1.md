@@ -1,16 +1,14 @@
 ---
-title: "Stop Hoping. Start Building."
-subtitle: "How Does Getting a Fully Funded Scholarship Actually Happen?"
-category: "Mentorship"
-series: "Part 1"
-date: "2026-09-05"
-summary: "Fully funded opportunities stop looking like magic when you understand the evidence, fit, preparation, and strategy behind them."
-image: ""
-image_alt: ""
+title: Stop Hoping. Start Building - Part 1.
+subtitle: How Does Getting a Fully Funded Scholarship Actually Happen?
+category: Mentorship
+series: Part 1
+date: 2026-09-05
+summary: Fully funded opportunities stop looking like magic when you understand
+  the evidence, fit, preparation, and strategy behind them.
 published: true
 featured: true
 ---
-
 Let me say this plainly, with my full chest: fully funded Master’s and PhD opportunities abroad are real. Not rumors, not a “special people” thing, not something reserved for geniuses or people with connections. I have lived it, I am living it, and I have watched others do it too. The reason many people never get close is not because they are not good enough. It is because they do not know the game exists, so they never learn the rules. Once you understand that scholarships are awarded through evidence, fit, and strategy, the whole journey stops looking like magic and starts looking like a process.
 
 Here is the mindset shift that changed my life: I found out and got convinced that studying abroad is not a wish, it is a project. When I became serious in 2020 during my NYSC, I stopped “hoping” and started building. I tracked deadlines like a professional. I treated my CV like a proof document, not a biography. I learned that your personal story matters, but it must be backed by results, growth, and direction. That approach helped me earn a fully funded scholarship in Taiwan through the Taiwan Government Ministry of Education, and it carried me forward into my current PhD training in the United States. The win did not come because I was lucky. It came because I learned how to package my value, show my readiness, and apply with intention.

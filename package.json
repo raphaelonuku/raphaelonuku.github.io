@@ -1,0 +1,9 @@
+{
+  "name": "raphael-onuku-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-writing.mjs",
+    "build:writing": "node scripts/build-writing.mjs"
+  }
+}

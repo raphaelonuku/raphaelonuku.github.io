@@ -1,0 +1,80 @@
+media:
+  - name: writing_images
+    label: Writing images
+    input: dist/assets/writing
+    output: /assets/writing
+    rename: safe
+    extensions: [jpg, jpeg, png, webp, gif]
+
+content:
+  - name: writing
+    label: Writing
+    type: collection
+    path: content/writing
+    format: yaml-frontmatter
+    filename:
+      template: "{title}.md"
+      field: create
+    view:
+      fields: [title, category, date, published, featured]
+      primary: title
+      sort: date
+      order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: subtitle
+        label: Subtitle
+        type: text
+        required: true
+      - name: category
+        label: Category
+        type: select
+        required: true
+        options:
+          values: [Reflections, Experiences, Mentorship, Science and Society, Community, Announcements]
+      - name: series
+        label: Series label
+        type: string
+        description: Optional, for example Part 1
+      - name: date
+        label: Publication date
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: summary
+        label: Short summary
+        type: text
+        required: true
+        description: This appears on the Writing page and homepage
+      - name: image
+        label: Optional article image
+        type: image
+        options:
+          media: writing_images
+          rename: safe
+      - name: image_alt
+        label: Image description
+        type: string
+        description: Describe the image for readers who cannot see it
+      - name: published
+        label: Publish on the website
+        type: boolean
+        default: false
+      - name: featured
+        label: Feature on the homepage
+        type: boolean
+        default: false
+      - name: body
+        label: Article
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+          media: writing_images
+          rename: safe
+          switcher: true
+

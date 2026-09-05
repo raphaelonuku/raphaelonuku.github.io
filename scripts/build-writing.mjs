@@ -26,10 +26,22 @@ function parseDocument(source, filename) {
   const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
   if (!match) throw new Error(`${filename} is missing YAML frontmatter`);
   const data = {};
-  for (const line of match[1].split(/\r?\n/)) {
+  const lines = match[1].split(/\r?\n/);
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
     if (!line.trim() || line.trimStart().startsWith("#")) continue;
     const field = line.match(/^([A-Za-z0-9_]+):\s*(.*)$/);
-    if (field) data[field[1]] = decodeScalar(field[2]);
+    if (!field) continue;
+    if (field[2] === ">" || field[2] === "|") {
+      const parts = [];
+      while (index + 1 < lines.length && /^\s+/.test(lines[index + 1])) {
+        parts.push(lines[index + 1].trim());
+        index += 1;
+      }
+      data[field[1]] = field[2] === ">" ? parts.join(" ") : parts.join("\n");
+    } else {
+      data[field[1]] = decodeScalar(field[2]);
+    }
   }
   return { data, body: match[2].trim() };
 }
@@ -133,7 +145,7 @@ function normalizeArticle(data, body, file) {
     image: String(data.image || "").trim(),
     image_alt: String(data.image_alt || "").trim(),
     body: body.trim(),
-    slug: slugify(basename(file, ".md")),
+    slug: slugify([title, String(data.series || "").trim()].filter(Boolean).join(" ")),
     minutes: readingTime(body)
   };
 }

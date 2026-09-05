@@ -1,5 +1,5 @@
 ---
-title: "Stop Hoping. Start Building "
+title: Stop Hoping. Start Building - Part 2
 subtitle: >
   Here is a Study Abroad and Scholarship To-Do List That Will Turn Your Desire
   Into Submissions!

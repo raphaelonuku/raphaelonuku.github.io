@@ -18,7 +18,7 @@ summary: >-
 
   The mentorship will hold online on Saturday, September 12, 2026 at 3 PM
   Nigerian time. Registration closes on Thursday, September 10, 2026.
-published: false
+published: true
 featured: false
 ---
 ### Bringing IgnitedFuture Mentorship Home to Abbi

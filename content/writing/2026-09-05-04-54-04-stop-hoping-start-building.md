@@ -7,7 +7,6 @@ category: Mentorship
 series: Part 2
 date: 2026-09-05
 summary: Desire is the spark, yes, but structure is the fuel.
-image: /assets/writing/img1963-1.jpg
 published: true
 featured: true
 ---

@@ -133,6 +133,7 @@ button, input, textarea { font: inherit; }
   gap: clamp(2rem, 7vw, 8rem);
   align-items: end;
 }
+.hero-grid > * { min-width: 0; }
 .eyebrow {
   display: flex;
   align-items: center;
@@ -314,8 +315,8 @@ button, input, textarea { font: inherit; }
 .initiative-logo img { width: 100%; max-height: 180px; object-fit: contain; }
 .initiative-logo:last-child img { max-height: 135px; }
 
-.research-motion { display: flex; justify-content: flex-end; margin: 2.2rem 0 1.6rem; }
-.research-motion video { width: min(100%, 360px); height: auto; display: block; mix-blend-mode: multiply; }
+.research-motion { display: flex; justify-content: center; margin: 2.2rem 0 1.6rem; }
+.research-motion video { width: min(100%, 420px); height: auto; display: block; background: var(--paper); }
 
 .contact-email { color: var(--blue); font-weight: 800; font-size: 1.25rem !important; }
 .profile-list { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 2rem; }
@@ -342,7 +343,7 @@ button, input, textarea { font: inherit; }
   .nav-links { display: none; position: absolute; inset: 74px 0 auto; padding: 1.5rem 1rem 2rem; background: var(--ink); flex-direction: column; align-items: flex-start; }
   .nav-links.open { display: flex; }
   .hero-grid, .section-head, .content-grid, .impact-grid { grid-template-columns: 1fr; }
-  .orbit-card { width: calc(100% + 0.5rem); min-height: 315px; order: -1; opacity: 0.9; transform: translateX(-0.5rem); }
+  .orbit-card { width: 100%; min-height: 315px; order: -1; opacity: 0.9; transform: translateX(-0.9rem); }
   .peptide-ring { width: 285px; }
   .photo-story { grid-template-columns: 1fr 1fr; transform: none; padding-top: 1rem; }
   .photo-story figure:first-child { grid-column: 1 / -1; min-height: 420px; }
@@ -357,8 +358,11 @@ button, input, textarea { font: inherit; }
 
 @media (max-width: 600px) {
   .hero { padding-top: 7rem; }
-  .hero h1 { font-size: clamp(3.6rem, 20vw, 6rem); }
-  .orbit-card { min-height: 270px; }
+  .hero h1 { max-width: 100%; font-size: clamp(3rem, 16vw, 4.5rem); line-height: 0.88; letter-spacing: -0.08em; }
+  .hero .eyebrow { position: relative; display: block; max-width: 100%; padding-left: 2.1rem; font-size: 0.7rem; line-height: 1.75; letter-spacing: 0.13em; }
+  .hero .eyebrow::before { position: absolute; left: 0; top: 0.62rem; width: 1.5rem; }
+  .hero-copy { max-width: 100%; font-size: 1.05rem; overflow-wrap: break-word; }
+  .orbit-card { min-height: 270px; transform: translateX(-1.1rem); }
   .orbit-card::before { width: 250px; height: 250px; }
   .orbit-card::after { width: 185px; height: 185px; }
   .peptide-ring { width: 255px; }

@@ -20,6 +20,7 @@ summary: >-
   Nigerian time. Registration closes on Thursday, September 10, 2026.
 published: true
 featured: false
+social_image: /assets/writing/ignitedfuture-abbi-mentorship-2026-social.png
 ---
 ### Bringing IgnitedFuture Mentorship Home to Abbi
 

@@ -1,6 +1,6 @@
 # Raphael Onuku
 
-Personal research website for Raphael S. Onuku.
+Personal research website for Raphael Onuku.
 
 ## Local preview
 

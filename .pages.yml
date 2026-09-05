@@ -57,6 +57,13 @@ content:
         label: Image description
         type: string
         description: Describe the image for readers who cannot see it
+      - name: social_image
+        label: Optional sharing image
+        type: image
+        options:
+          media: writing_images
+          rename: safe
+        description: Used only when this article link is shared
       - name: published
         label: Publish on the website
         type: boolean

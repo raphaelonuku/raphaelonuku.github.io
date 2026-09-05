@@ -512,3 +512,59 @@ a.initiative-logo:focus-visible {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   [data-reveal] { opacity: 1; transform: none; }
 }
+
+/* Media and features */
+.media-hero { background: radial-gradient(circle at 82% 22%, rgba(84,216,245,.16), transparent 30%), var(--ink); }
+.media-featured { padding-top: clamp(4rem, 8vw, 8rem); }
+.media-lead { display: grid; grid-template-columns: minmax(260px, .72fr) 1.28fr; min-height: 560px; margin-top: 2rem; border: 1px solid var(--line); background: var(--paper); }
+.media-lead figure { margin: 0; min-height: 100%; overflow: hidden; background: var(--ink); }
+.media-lead img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; }
+.media-lead > div { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: clamp(2rem, 6vw, 6rem); }
+.media-lead h2 { max-width: 780px; margin: .75rem 0 1.35rem; }
+.media-lead p:not(.media-source) { max-width: 720px; margin: 0 0 2rem; font-size: clamp(1rem, 1.4vw, 1.2rem); line-height: 1.75; }
+.media-source { margin: 0; color: var(--blue); font: 800 .78rem/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.media-story-grid { border-top: 1px solid var(--line); }
+.media-story { display: grid; grid-template-columns: minmax(220px, .68fr) 1.32fr; min-height: 340px; border: 1px solid var(--line); border-top: 0; background: var(--paper); }
+.media-story figure { margin: 0; overflow: hidden; background: #d9dde0; }
+.media-story figure img { width: 100%; height: 100%; object-fit: cover; }
+.media-story > div { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: clamp(1.75rem, 4vw, 4rem); }
+.media-story h3 { max-width: 760px; margin: .8rem 0 1rem; font-size: clamp(1.7rem, 3vw, 3rem); }
+.media-story p:not(.media-source) { max-width: 760px; margin: 0 0 1.6rem; line-height: 1.7; }
+.media-story-text { grid-template-columns: 1fr; background: linear-gradient(120deg, rgba(84,216,245,.08), rgba(255,196,0,.1)); }
+.media-story-text > div { min-height: 300px; }
+.recognition-list { border-top: 1px solid rgba(255,255,255,.25); }
+.recognition-list a { display: grid; grid-template-columns: 100px 1fr 1fr auto; align-items: center; gap: 1.5rem; padding: 1.8rem 0; border-bottom: 1px solid rgba(255,255,255,.18); color: var(--white); text-decoration: none; }
+.recognition-list a::after { content: "↗"; color: var(--yellow); font-size: 1.25rem; }
+.recognition-list span { color: var(--yellow); font: 800 .8rem/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.recognition-list strong { font-size: clamp(1.05rem, 1.7vw, 1.35rem); }
+.recognition-list em { color: rgba(255,255,255,.67); font-style: normal; }
+.video-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+.video-card { background: var(--ink); color: var(--white); }
+.video-card-wide { grid-column: 1 / -1; }
+.video-frame { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #000; }
+.video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-card > div:last-child { min-height: 132px; padding: 1.4rem 1.5rem 1.6rem; }
+.video-card h3 { margin: .55rem 0 0; font-size: clamp(1.25rem, 2vw, 1.8rem); }
+.home-media-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(2rem, 7vw, 7rem); align-items: end; }
+.home-media-links { border-top: 1px solid var(--line); }
+.home-media-links a { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: 1.4rem 0; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; }
+.home-media-links a::after { content: "↗"; color: var(--blue); }
+.home-media-links span { display: block; margin-top: .3rem; color: var(--muted); font-size: .9rem; }
+
+@media (max-width: 900px) {
+  .media-lead, .media-story, .home-media-grid { grid-template-columns: 1fr; }
+  .media-lead { min-height: 0; }
+  .media-lead figure { min-height: 440px; }
+  .media-story figure { min-height: 300px; }
+  .recognition-list a { grid-template-columns: 80px 1fr auto; }
+  .recognition-list em { grid-column: 2 / -1; }
+}
+
+@media (max-width: 600px) {
+  .media-lead figure { min-height: 380px; }
+  .media-story figure { min-height: 260px; }
+  .video-grid { grid-template-columns: 1fr; }
+  .video-card-wide { grid-column: auto; }
+  .recognition-list a { grid-template-columns: 1fr auto; gap: .65rem 1rem; }
+  .recognition-list strong, .recognition-list em { grid-column: 1 / -1; }
+}

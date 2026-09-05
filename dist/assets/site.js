@@ -30,3 +30,25 @@ if ('IntersectionObserver' in window) {
 document.querySelectorAll('[data-year]').forEach((node) => {
   node.textContent = new Date().getFullYear();
 });
+
+const contactForm = document.querySelector('[data-contact-form]');
+if (contactForm) {
+  contactForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const data = new FormData(contactForm);
+    const preparedMessage = [
+      `Subject ${String(data.get('subject') || 'Website inquiry')}`,
+      '',
+      String(data.get('message') || ''),
+      '',
+      `From ${String(data.get('name') || '')}`,
+      `Reply to ${String(data.get('email') || '')}`
+    ].join('\n');
+    const status = contactForm.querySelector('[data-form-status]');
+    navigator.clipboard.writeText(preparedMessage).then(() => {
+      if (status) status.textContent = 'Message copied. Paste it into an email to ronuku[at]umich.edu.';
+    }).catch(() => {
+      if (status) status.textContent = 'Copy the completed fields and email them to ronuku[at]umich.edu.';
+    });
+  });
+}

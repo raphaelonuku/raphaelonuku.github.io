@@ -354,7 +354,6 @@ button, input, textarea { font: inherit; }
 .article-body { font-family: var(--serif); font-size: clamp(1.15rem, 1.8vw, 1.32rem); line-height: 1.82; }
 .article-body p { margin: 0 0 1.75rem; }
 .article-body p:first-child::first-letter { float: left; margin: 0.12em 0.12em 0 0; color: var(--blue); font-family: var(--display); font-size: 4.6em; font-weight: 800; line-height: 0.72; }
-.article-closing { margin-top: 3rem !important; padding-top: 2rem; border-top: 3px solid var(--maize); font-weight: 700; }
 .article-next { background: var(--blue); color: var(--white); }
 .article-next .kicker { color: var(--cyan); }
 .article-next h2 { max-width: 900px; text-transform: none; }

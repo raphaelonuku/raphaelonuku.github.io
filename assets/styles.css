@@ -540,6 +540,7 @@ a.initiative-logo:focus-visible {
 .recognition-list em { color: rgba(255,255,255,.67); font-style: normal; }
 .video-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
 .video-card { background: var(--ink); color: var(--white); }
+.video-card .media-source { color: var(--maize); }
 .video-card-wide { grid-column: 1 / -1; }
 .video-frame { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #000; }
 .video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }

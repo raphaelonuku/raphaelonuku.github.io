@@ -101,6 +101,43 @@ function formatDate(value) {
   return new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(date);
 }
 
+function titleFromFilename(filename) {
+  const cleaned = basename(filename, ".md")
+    .replace(/^\d{4}-\d{2}-\d{2}(?:-\d{2}-\d{2}-\d{2})?-/, "")
+    .replace(/[-_]+/g, " ")
+    .trim();
+  return cleaned ? cleaned.replace(/\b\w/g, letter => letter.toUpperCase()) : "Untitled writing";
+}
+
+function plainText(markdown) {
+  return markdown
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[#>*_`~-]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeArticle(data, body, file) {
+  const text = plainText(body);
+  const title = String(data.title || "").trim() || titleFromFilename(file);
+  const date = String(data.date || "").trim() || new Date().toISOString().slice(0, 10);
+  return {
+    ...data,
+    title,
+    subtitle: String(data.subtitle || "").trim(),
+    category: String(data.category || "").trim() || "Reflections",
+    series: String(data.series || "").trim(),
+    date,
+    summary: String(data.summary || "").trim() || text.slice(0, 180) || "A new entry from Raphael S. Onuku.",
+    image: String(data.image || "").trim(),
+    image_alt: String(data.image_alt || "").trim(),
+    body: body.trim(),
+    slug: slugify(basename(file, ".md")),
+    minutes: readingTime(body)
+  };
+}
+
 function nav(prefix) {
   const links = [["Home", prefix], ["Research", `${prefix}research/`], ["Publications", `${prefix}publications/`], ["Writing", `${prefix}writing/`], ["About", `${prefix}about/`], ["Impact", `${prefix}impact/`], ["Contact", `${prefix}contact/`]];
   return `<header class="site-header"><nav class="nav-shell" aria-label="Main navigation"><a class="brand" href="${prefix}"><img class="brand-mark" src="${prefix}assets/favicon.svg" alt=""><span>Raphael Onuku</span></a><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-menu">Menu</button><div class="nav-links" id="main-menu">${links.map(([label, href]) => `<a href="${href}"${label === "Writing" ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</div></nav></header>`;
@@ -119,9 +156,10 @@ function articlePage(article) {
   const series = article.series ? ` · ${escapeHtml(article.series)}` : "";
   const socialImage = article.image ? `${SITE_URL}${article.image}` : `${SITE_URL}/assets/social-preview.jpg`;
   const cover = article.image ? `<figure class="article-cover"><img src="${escapeHtml(article.image)}" alt="${escapeHtml(article.image_alt || "")}"></figure>` : "";
+  const articleContent = article.body ? markdownToHtml(article.body) : "<p>This entry has no article text yet.</p>";
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="${summary}"><link rel="canonical" href="${SITE_URL}/writing/${article.slug}/"><meta property="og:type" content="article"><meta property="og:title" content="${title} | Raphael S. Onuku"><meta property="og:description" content="${subtitle}"><meta property="og:url" content="${SITE_URL}/writing/${article.slug}/"><meta property="og:image" content="${socialImage}"><meta property="article:published_time" content="${escapeHtml(article.date)}"><meta property="article:author" content="Raphael S. Onuku"><meta property="article:section" content="${category}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${title} | Raphael S. Onuku"><meta name="twitter:description" content="${subtitle}"><meta name="twitter:image" content="${socialImage}"><meta name="theme-color" content="#07111f"><title>${title} | Raphael S. Onuku</title><link rel="icon" href="${prefix}assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="${prefix}assets/styles.css"></head>
-<body><a class="skip-link" href="#main">Skip to content</a>${nav(prefix)}<main id="main"><header class="page-hero article-hero"><div class="article-hero-inner"><p class="eyebrow">${category}${series}</p><h1>${title}</h1><p class="article-deck">${subtitle}</p><div class="article-meta"><span>By Raphael S. Onuku</span><time datetime="${escapeHtml(article.date)}">${escapeHtml(formatDate(article.date))}</time><span>${article.minutes} minute read</span></div></div></header>${cover}<div class="article-shell"><aside class="article-aside"><p>${category}</p><a href="../">← All writing</a></aside><article class="article-body">${markdownToHtml(article.body)}</article></div><section class="section article-next"><p class="kicker">More writing</p><h2>Ideas, experiences, and practical guidance.</h2><p>Return to the Writing collection for more reflections, mentorship, science, community, and announcements.</p><a class="button primary" href="../">Return to Writing <span class="arrow">↗</span></a></section></main><footer class="footer"><div class="footer-meta"><span>Raphael S. Onuku</span>${socials(prefix)}<span>© <span data-year></span></span></div></footer><script src="${prefix}assets/site.js"></script></body></html>`;
+<body><a class="skip-link" href="#main">Skip to content</a>${nav(prefix)}<main id="main"><header class="page-hero article-hero"><div class="article-hero-inner"><p class="eyebrow">${category}${series}</p><h1>${title}</h1>${subtitle ? `<p class="article-deck">${subtitle}</p>` : ""}<div class="article-meta"><span>By Raphael S. Onuku</span><time datetime="${escapeHtml(article.date)}">${escapeHtml(formatDate(article.date))}</time><span>${article.minutes} minute read</span></div></div></header>${cover}<div class="article-shell"><aside class="article-aside"><p>${category}</p><a href="../">← All writing</a></aside><article class="article-body">${articleContent}</article></div><section class="section article-next"><p class="kicker">More writing</p><h2>Ideas, experiences, and practical guidance.</h2><p>Return to the Writing collection for more reflections, mentorship, science, community, and announcements.</p><a class="button primary" href="../">Return to Writing <span class="arrow">↗</span></a></section></main><footer class="footer"><div class="footer-meta"><span>Raphael S. Onuku</span>${socials(prefix)}<span>© <span data-year></span></span></div></footer><script src="${prefix}assets/site.js"></script></body></html>`;
 }
 
 function card(article, featured = false) {
@@ -156,10 +194,7 @@ async function main() {
   for (const file of files) {
     const { data, body } = parseDocument(await readFile(join(CONTENT_DIR, file), "utf8"), file);
     if (data.published !== true) continue;
-    for (const required of ["title", "subtitle", "category", "date", "summary"]) {
-      if (!data[required]) throw new Error(`${file} is missing ${required}`);
-    }
-    articles.push({ ...data, body, slug: slugify(basename(file, ".md")), minutes: readingTime(body) });
+    articles.push(normalizeArticle(data, body, file));
   }
   articles.sort((a, b) => String(b.date).localeCompare(String(a.date)));
   await mkdir(OUTPUT_DIR, { recursive: true });

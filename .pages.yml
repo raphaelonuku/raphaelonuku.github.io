@@ -13,8 +13,8 @@ content:
     path: content/writing
     format: yaml-frontmatter
     filename:
-      template: "{title}.md"
-      field: create
+      template: "{year}-{month}-{day}-{hour}-{minute}-{second}-{title}.md"
+      field: false
     view:
       fields: [title, category, date, published, featured]
       primary: title
@@ -24,15 +24,14 @@ content:
       - name: title
         label: Title
         type: string
-        required: true
+        default: Untitled draft
       - name: subtitle
         label: Subtitle
         type: text
-        required: true
       - name: category
         label: Category
         type: select
-        required: true
+        default: Reflections
         options:
           values: [Reflections, Experiences, Mentorship, Science and Society, Community, Announcements]
       - name: series
@@ -42,13 +41,11 @@ content:
       - name: date
         label: Publication date
         type: date
-        required: true
         options:
           format: yyyy-MM-dd
       - name: summary
         label: Short summary
         type: text
-        required: true
         description: This appears on the Writing page and homepage
       - name: image
         label: Optional article image
@@ -71,10 +68,8 @@ content:
       - name: body
         label: Article
         type: rich-text
-        required: true
         options:
           format: markdown
           media: writing_images
           rename: safe
           switcher: true
-

@@ -30,3 +30,33 @@ if ('IntersectionObserver' in window) {
 document.querySelectorAll('[data-year]').forEach((node) => {
   node.textContent = new Date().getFullYear();
 });
+
+document.querySelectorAll('[data-writing-pagination]').forEach((pagination) => {
+  const archive = pagination.closest('.writing-archive');
+  const pages = [...archive.querySelectorAll('[data-writing-page]')];
+  const pageButtons = [...pagination.querySelectorAll('[data-writing-page-button]')];
+  const previous = pagination.querySelector('[data-writing-prev]');
+  const next = pagination.querySelector('[data-writing-next]');
+  const status = pagination.querySelector('[data-writing-status]');
+  let current = 1;
+
+  const showPage = (page) => {
+    current = Math.min(Math.max(page, 1), pages.length);
+    pages.forEach((group, index) => {
+      group.hidden = index + 1 !== current;
+    });
+    pageButtons.forEach((button, index) => {
+      if (index + 1 === current) button.setAttribute('aria-current', 'page');
+      else button.removeAttribute('aria-current');
+    });
+    previous.disabled = current === 1;
+    next.disabled = current === pages.length;
+    status.textContent = `Page ${current} of ${pages.length}`;
+  };
+
+  previous.addEventListener('click', () => showPage(current - 1));
+  next.addEventListener('click', () => showPage(current + 1));
+  pageButtons.forEach((button) => {
+    button.addEventListener('click', () => showPage(Number(button.dataset.writingPageButton)));
+  });
+});

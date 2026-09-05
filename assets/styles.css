@@ -446,6 +446,19 @@ button, input, textarea { font: inherit; }
 .article-body blockquote { margin: 2rem 0; padding-left: 1.5rem; border-left: 4px solid var(--yellow); font-size: 1.1em; }
 .writing-archive .section-head { margin-bottom: clamp(2.5rem, 5vw, 4.5rem); }
 .writing-card-grid { display: grid; grid-template-columns: 1fr; border-top: 1px solid var(--line); }
+.writing-card-grid[hidden] { display: none; }
+.writing-pagination { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; margin-top: 2rem; }
+.writing-pagination button { min-width: 3rem; min-height: 3rem; border: 1px solid var(--line); background: transparent; color: var(--ink); font: inherit; font-weight: 800; cursor: pointer; }
+.writing-pagination button:hover, .writing-pagination button:focus-visible, .writing-pagination button[aria-current="page"] { background: var(--ink); color: var(--white); }
+.writing-pagination button:disabled { opacity: .35; cursor: not-allowed; }
+.writing-page-numbers { display: flex; justify-content: center; gap: .5rem; }
+.writing-page-status { grid-column: 1 / -1; margin: 0; text-align: center; color: var(--muted); font-size: .85rem; }
+@media (max-width: 600px) {
+  .writing-pagination { grid-template-columns: 1fr 1fr; }
+  .writing-page-numbers { grid-column: 1 / -1; grid-row: 1; }
+  .writing-pagination [data-writing-prev] { grid-column: 1; }
+  .writing-pagination [data-writing-next] { grid-column: 2; }
+}
 .writing-card {
   display: grid;
   grid-template-columns: minmax(170px, 0.34fr) minmax(0, 1fr) auto;

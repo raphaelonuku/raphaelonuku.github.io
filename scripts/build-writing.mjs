@@ -40,7 +40,12 @@ function parseDocument(source, filename) {
       }
       data[field[1]] = field[2] === ">" ? parts.join(" ") : parts.join("\n");
     } else {
-      data[field[1]] = decodeScalar(field[2]);
+      const parts = [field[2]];
+      while (index + 1 < lines.length && /^\s+/.test(lines[index + 1])) {
+        parts.push(lines[index + 1].trim());
+        index += 1;
+      }
+      data[field[1]] = decodeScalar(parts.join(" "));
     }
   }
   return { data, body: match[2].trim() };
@@ -113,6 +118,12 @@ function formatDate(value) {
   return new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(date);
 }
 
+function publicationSortKey(date, filename) {
+  const timestamp = basename(filename, ".md").match(/^\d{4}-\d{2}-\d{2}-(\d{2})-(\d{2})-(\d{2})-/);
+  const time = timestamp ? `${timestamp[1]}:${timestamp[2]}:${timestamp[3]}` : "00:00:00";
+  return `${date}T${time}`;
+}
+
 function titleFromFilename(filename) {
   const cleaned = basename(filename, ".md")
     .replace(/^\d{4}-\d{2}-\d{2}(?:-\d{2}-\d{2}-\d{2})?-/, "")
@@ -134,18 +145,25 @@ function normalizeArticle(data, body, file) {
   const text = plainText(body);
   const title = String(data.title || "").trim() || titleFromFilename(file);
   const date = String(data.date || "").trim() || new Date().toISOString().slice(0, 10);
+  const rawSeries = String(data.series || "").trim();
+  const partLabel = rawSeries.match(/\bPart\s+\d+\b/i)?.[0] || "";
+  const series = partLabel || rawSeries;
+  const slugTitle = partLabel && !title.toLowerCase().includes(partLabel.toLowerCase())
+    ? `${title} ${partLabel}`
+    : title;
   return {
     ...data,
     title,
     subtitle: String(data.subtitle || "").trim(),
     category: String(data.category || "").trim() || "Reflections",
-    series: String(data.series || "").trim(),
+    series,
     date,
+    sortKey: publicationSortKey(date, file),
     summary: String(data.summary || "").trim() || text.slice(0, 180) || "A new entry from Raphael S. Onuku.",
     image: String(data.image || "").trim(),
     image_alt: String(data.image_alt || "").trim(),
     body: body.trim(),
-    slug: slugify([title, String(data.series || "").trim()].filter(Boolean).join(" ")),
+    slug: slugify(slugTitle),
     minutes: readingTime(body)
   };
 }
@@ -180,15 +198,28 @@ function card(article, featured = false) {
   return `<article class="writing-card"><p class="writing-card-meta">${escapeHtml(article.category)} · ${escapeHtml(formatDate(article.date))}</p><h3><a href="${link}">${escapeHtml(article.title)}</a></h3><p>${escapeHtml(article.summary)}</p><a class="text-link" href="${link}">Read <span aria-hidden="true">↗</span></a></article>`;
 }
 
+function writingArchive(articles) {
+  if (!articles.length) return "";
+  const pageSize = 5;
+  const pages = [];
+  for (let index = 0; index < articles.length; index += pageSize) {
+    pages.push(articles.slice(index, index + pageSize));
+  }
+  const pageGroups = pages.map((items, index) =>
+    `<div class="writing-card-grid" data-writing-page="${index + 1}"${index ? " hidden" : ""}>${items.map(item => card(item)).join("")}</div>`
+  ).join("");
+  const pagination = pages.length > 1
+    ? `<nav class="writing-pagination" data-writing-pagination aria-label="Writing archive pages"><button type="button" data-writing-prev disabled>Newer</button><div class="writing-page-numbers">${pages.map((_, index) => `<button type="button" data-writing-page-button="${index + 1}"${index === 0 ? ' aria-current="page"' : ""}>${index + 1}</button>`).join("")}</div><button type="button" data-writing-next>Older</button><p class="writing-page-status" data-writing-status aria-live="polite">Page 1 of ${pages.length}</p></nav>`
+    : "";
+  return `<section class="section writing-archive"><div class="section-head"><p class="kicker">Latest writing</p><div><h2>More from the notebook.</h2><p class="section-lede">Essays, reflections, practical guidance, and announcements.</p></div></div>${pageGroups}${pagination}</section>`;
+}
+
 function writingIndex(articles) {
-  const featured = articles.find(item => item.featured) || articles[0];
-  const remaining = articles
-    .filter(item => item !== featured)
-    .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || String(b.date).localeCompare(String(a.date)))
-    .slice(0, 5);
+  const featured = articles[0];
+  const archive = writingArchive(articles.slice(1));
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Essays, reflections, mentorship guidance, and announcements from Raphael S. Onuku."><link rel="canonical" href="${SITE_URL}/writing/"><meta property="og:type" content="website"><meta property="og:title" content="Writing | Raphael S. Onuku"><meta property="og:description" content="Ideas worth sharing on opportunity, mentorship, science, community, and life."><meta property="og:url" content="${SITE_URL}/writing/"><meta property="og:image" content="${SITE_URL}/assets/social-preview.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Writing | Raphael S. Onuku"><meta name="twitter:description" content="Ideas worth sharing on opportunity, mentorship, science, community, and life."><meta name="twitter:image" content="${SITE_URL}/assets/social-preview.jpg"><meta name="theme-color" content="#07111f"><title>Writing | Raphael S. Onuku</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/assets/favicon.svg?v=2" type="image/svg+xml"><link rel="icon" href="/assets/favicon-32.png?v=2" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2"><link rel="stylesheet" href="../assets/styles.css?v=20260905c"></head>
-<body><a class="skip-link" href="#main">Skip to content</a>${nav("../")}<main id="main"><header class="page-hero"><div class="writing-intro"><p class="eyebrow">Writing</p><h1>Ideas worth sharing.</h1><p class="intro">Reflections on opportunity, mentorship, science, community, and the experiences that shape a life. This is also where I share announcements that may help others move forward.</p></div></header>${featured ? `<section class="section"><p class="kicker">Featured essay</p>${card(featured, true)}</section>` : ""}${remaining.length ? `<section class="section writing-archive"><div class="section-head"><p class="kicker">Latest writing</p><div><h2>More from the notebook.</h2><p class="section-lede">Essays, reflections, practical guidance, and announcements.</p></div></div><div class="writing-card-grid">${remaining.map(item => card(item)).join("")}</div></section>` : ""}<section class="section blue"><div class="section-head"><p class="kicker">The notebook</p><div><h2>Experience becomes useful when it is shared.</h2><p class="section-lede">This collection will grow across personal reflections, mentorship, science and society, community work, and timely announcements.</p><div class="writing-categories" aria-label="Writing categories"><span>Reflections</span><span>Experiences</span><span>Mentorship</span><span>Science and Society</span><span>Community</span><span>Announcements</span></div></div></div></section></main><footer class="footer"><div class="footer-call"><h2>Words can become <span>direction.</span></h2><a class="button primary" href="../contact/">Start a conversation <span class="arrow">↗</span></a></div><div class="footer-meta"><span>Raphael S. Onuku</span>${socials("../")}<span>© <span data-year></span></span></div></footer><script src="../assets/site.js"></script></body></html>`;
+<body><a class="skip-link" href="#main">Skip to content</a>${nav("../")}<main id="main"><header class="page-hero"><div class="writing-intro"><p class="eyebrow">Writing</p><h1>Ideas worth sharing.</h1><p class="intro">Reflections on opportunity, mentorship, science, community, and the experiences that shape a life. This is also where I share announcements that may help others move forward.</p></div></header>${featured ? `<section class="section"><p class="kicker">Featured essay</p>${card(featured, true)}</section>` : ""}${archive}<section class="section blue"><div class="section-head"><p class="kicker">The notebook</p><div><h2>Experience becomes useful when it is shared.</h2><p class="section-lede">This collection will grow across personal reflections, mentorship, science and society, community work, and timely announcements.</p><div class="writing-categories" aria-label="Writing categories"><span>Reflections</span><span>Experiences</span><span>Mentorship</span><span>Science and Society</span><span>Community</span><span>Announcements</span></div></div></div></section></main><footer class="footer"><div class="footer-call"><h2>Words can become <span>direction.</span></h2><a class="button primary" href="../contact/">Start a conversation <span class="arrow">↗</span></a></div><div class="footer-meta"><span>Raphael S. Onuku</span>${socials("../")}<span>© <span data-year></span></span></div></footer><script src="../assets/site.js"></script></body></html>`;
 }
 
 async function updateHomepage(featured) {
@@ -211,7 +242,7 @@ async function main() {
     if (data.published !== true) continue;
     articles.push(normalizeArticle(data, body, file));
   }
-  articles.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  articles.sort((a, b) => String(b.sortKey).localeCompare(String(a.sortKey)));
   await mkdir(OUTPUT_DIR, { recursive: true });
   for (const article of articles) {
     const articleDir = join(OUTPUT_DIR, article.slug);
@@ -219,7 +250,7 @@ async function main() {
     await writeFile(join(articleDir, "index.html"), articlePage(article));
   }
   await writeFile(join(OUTPUT_DIR, "index.html"), writingIndex(articles));
-  await updateHomepage(articles.find(item => item.featured) || articles[0]);
+  await updateHomepage(articles[0]);
   console.log(`Built ${articles.length} published writing entr${articles.length === 1 ? "y" : "ies"}`);
 }
 

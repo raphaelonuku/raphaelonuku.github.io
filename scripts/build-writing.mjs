@@ -199,8 +199,19 @@ function articlePage(article) {
   const socialImage = `${SITE_URL}${socialImagePath}${article.social_image ? "?v=20260905" : ""}`;
   const cover = article.image ? `<figure class="article-cover"><img src="${escapeHtml(article.image)}" alt="${escapeHtml(article.image_alt || "")}"></figure>` : "";
   const articleContent = article.body ? markdownToHtml(article.body) : "<p>This entry has no article text yet.</p>";
+  const articleSchema = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.subtitle || article.summary,
+    image: socialImage,
+    datePublished: article.date,
+    dateModified: article.date,
+    mainEntityOfPage: `${SITE_URL}/writing/${article.slug}/`,
+    author: { "@type": "Person", name: "Raphael Onuku", url: SITE_URL }
+  }).replaceAll("<", "\\u003c");
   return `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="${summary}"><link rel="canonical" href="${SITE_URL}/writing/${article.slug}/"><meta property="og:type" content="article"><meta property="og:title" content="${title}"><meta property="og:description" content="${subtitle || summary}"><meta property="og:url" content="${SITE_URL}/writing/${article.slug}/"><meta property="og:image" content="${socialImage}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="article:published_time" content="${escapeHtml(article.date)}"><meta property="article:author" content="Raphael Onuku"><meta property="article:section" content="${category}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${title}"><meta name="twitter:description" content="${subtitle || summary}"><meta name="twitter:image" content="${socialImage}"><meta name="theme-color" content="#07111f"><title>${title} | Raphael Onuku</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/assets/favicon.svg?v=2" type="image/svg+xml"><link rel="icon" href="/assets/favicon-32.png?v=2" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2"><link rel="stylesheet" href="${prefix}assets/styles.css?v=20260905f"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="${summary}"><link rel="canonical" href="${SITE_URL}/writing/${article.slug}/"><meta property="og:type" content="article"><meta property="og:title" content="${title}"><meta property="og:description" content="${subtitle || summary}"><meta property="og:url" content="${SITE_URL}/writing/${article.slug}/"><meta property="og:image" content="${socialImage}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="article:published_time" content="${escapeHtml(article.date)}"><meta property="article:author" content="Raphael Onuku"><meta property="article:section" content="${category}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${title}"><meta name="twitter:description" content="${subtitle || summary}"><meta name="twitter:image" content="${socialImage}"><meta name="theme-color" content="#07111f"><title>${title} | Raphael Onuku</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/assets/favicon.svg?v=2" type="image/svg+xml"><link rel="icon" href="/assets/favicon-32.png?v=2" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2"><link rel="stylesheet" href="${prefix}assets/styles.css?v=20260906a"><script type="application/ld+json">${articleSchema}</script></head>
 <body><a class="skip-link" href="#main">Skip to content</a>${nav(prefix)}<main id="main"><header class="page-hero article-hero"><div class="article-hero-inner"><p class="eyebrow">${category}${series}</p><h1>${title}</h1>${subtitle ? `<p class="article-deck">${subtitle}</p>` : ""}<div class="article-meta"><span>By Raphael Onuku</span><time datetime="${escapeHtml(article.date)}">${escapeHtml(formatDate(article.date))}</time><span>${article.minutes} minute read</span></div></div></header>${cover}<div class="article-shell"><aside class="article-aside"><p>${category}</p><a href="../">← All writing</a></aside><article class="article-body">${articleContent}</article></div><section class="section article-next"><p class="kicker">More writing</p><h2>Ideas, experiences, and practical guidance.</h2><p>Return to the Writing collection for more reflections, mentorship, science, community, and announcements.</p><a class="button primary" href="../">Return to Writing <span class="arrow">↗</span></a></section></main><footer class="footer"><div class="footer-meta"><span>Raphael Onuku</span>${socials(prefix)}<span>© <span data-year></span></span></div></footer><script src="${prefix}assets/site.js"></script></body></html>`;
 }
 
@@ -230,7 +241,7 @@ function writingIndex(articles) {
   const featured = articles[0];
   const archive = writingArchive(articles.slice(1));
   return `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Essays, reflections, mentorship guidance, and announcements from Raphael Onuku."><link rel="canonical" href="${SITE_URL}/writing/"><meta property="og:type" content="website"><meta property="og:title" content="Writing | Raphael Onuku"><meta property="og:description" content="Ideas worth sharing on opportunity, mentorship, science, community, and life."><meta property="og:url" content="${SITE_URL}/writing/"><meta property="og:image" content="${SITE_URL}/assets/social-preview.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Writing | Raphael Onuku"><meta name="twitter:description" content="Ideas worth sharing on opportunity, mentorship, science, community, and life."><meta name="twitter:image" content="${SITE_URL}/assets/social-preview.jpg"><meta name="theme-color" content="#07111f"><title>Writing | Raphael Onuku</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/assets/favicon.svg?v=2" type="image/svg+xml"><link rel="icon" href="/assets/favicon-32.png?v=2" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2"><link rel="stylesheet" href="../assets/styles.css?v=20260905f"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Essays, reflections, mentorship guidance, and announcements from Raphael Onuku."><link rel="canonical" href="${SITE_URL}/writing/"><meta property="og:type" content="website"><meta property="og:title" content="Writing | Raphael Onuku"><meta property="og:description" content="Ideas worth sharing on opportunity, mentorship, science, community, and life."><meta property="og:url" content="${SITE_URL}/writing/"><meta property="og:image" content="${SITE_URL}/assets/social-preview.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Writing | Raphael Onuku"><meta name="twitter:description" content="Ideas worth sharing on opportunity, mentorship, science, community, and life."><meta name="twitter:image" content="${SITE_URL}/assets/social-preview.jpg"><meta name="theme-color" content="#07111f"><title>Writing | Raphael Onuku</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/assets/favicon.svg?v=2" type="image/svg+xml"><link rel="icon" href="/assets/favicon-32.png?v=2" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2"><link rel="stylesheet" href="../assets/styles.css?v=20260906a"></head>
 <body><a class="skip-link" href="#main">Skip to content</a>${nav("../")}<main id="main"><header class="page-hero"><div class="writing-intro"><p class="eyebrow">Writing</p><h1>Ideas worth sharing.</h1><p class="intro">Reflections on opportunity, mentorship, science, community, and the experiences that shape a life. This is also where I share announcements that may help others move forward.</p></div></header>${featured ? `<section class="section"><p class="kicker">Featured writing</p>${card(featured, true)}</section>` : ""}${archive}<section class="section blue"><div class="section-head"><p class="kicker">The notebook</p><div><h2>Experience becomes useful when it is shared.</h2><p class="section-lede">This collection will grow across personal reflections, mentorship, science and society, community work, and timely announcements.</p><div class="writing-categories" aria-label="Writing categories"><span>Reflections</span><span>Experiences</span><span>Mentorship</span><span>Science and Society</span><span>Community</span><span>Announcements</span></div></div></div></section></main><footer class="footer"><div class="footer-call"><h2>Words can become <span>direction.</span></h2><a class="button primary" href="../contact/">Start a conversation <span class="arrow">↗</span></a></div><div class="footer-meta"><span>Raphael Onuku</span>${socials("../")}<span>© <span data-year></span></span></div></footer><script src="../assets/site.js"></script></body></html>`;
 }
 
@@ -244,6 +255,18 @@ async function updateHomepage(featured) {
   const pattern = new RegExp(`${start}[\\s\\S]*?${end}`);
   if (!pattern.test(homepage)) throw new Error("Homepage writing markers are missing");
   await writeFile(homepagePath, homepage.replace(pattern, block));
+}
+
+async function writeSearchFiles(articles) {
+  const staticPages = ["", "research/", "publications/", "writing/", "about/", "impact/", "media/", "contact/"];
+  const urls = [
+    ...staticPages.map(path => ({ loc: `${SITE_URL}/${path}`, lastmod: new Date().toISOString().slice(0, 10) })),
+    ...articles.map(article => ({ loc: `${SITE_URL}/writing/${article.slug}/`, lastmod: article.date }))
+  ];
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(item => `  <url><loc>${item.loc}</loc><lastmod>${item.lastmod}</lastmod></url>`).join("\n")}\n</urlset>\n`;
+  const robots = `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`;
+  await writeFile(join(ROOT, "dist", "sitemap.xml"), sitemap);
+  await writeFile(join(ROOT, "dist", "robots.txt"), robots);
 }
 
 async function main() {
@@ -263,6 +286,7 @@ async function main() {
   }
   await writeFile(join(OUTPUT_DIR, "index.html"), writingIndex(articles));
   await updateHomepage(articles[0]);
+  await writeSearchFiles(articles);
   console.log(`Built ${articles.length} published writing entr${articles.length === 1 ? "y" : "ies"}`);
 }
 

@@ -360,6 +360,20 @@ button, input, textarea { font: inherit; }
 .article-body { font-family: var(--serif); font-size: clamp(1.15rem, 1.8vw, 1.32rem); line-height: 1.82; }
 .article-body p { margin: 0 0 1.75rem; }
 .article-body p:first-child::first-letter { float: left; margin: 0.12em 0.12em 0 0; color: var(--blue); font-family: var(--display); font-size: 4.6em; font-weight: 800; line-height: 0.72; }
+.article-body .article-closing {
+  position: relative;
+  margin-top: 3.25rem;
+  padding: 1.55rem 1.75rem 1.55rem 2rem;
+  border: 1px solid rgba(7, 17, 31, 0.12);
+  border-left: 5px solid var(--maize);
+  background: linear-gradient(105deg, rgba(255, 196, 0, 0.15), rgba(84, 216, 245, 0.11));
+  box-shadow: 0.55rem 0.55rem 0 rgba(7, 17, 31, 0.055);
+  font-family: var(--sans);
+  font-size: 0.96em;
+  line-height: 1.65;
+}
+.article-body .article-closing::before { content: ""; display: block; width: 3rem; height: 3px; margin-bottom: 1rem; background: var(--cyan); }
+.article-body .article-closing strong:first-child { color: var(--blue); font-size: 1.12em; letter-spacing: 0.01em; }
 .article-next { background: var(--blue); color: var(--white); }
 .article-next .kicker { color: var(--cyan); }
 .article-next h2 { max-width: 900px; text-transform: none; }

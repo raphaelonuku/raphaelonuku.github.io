@@ -3,6 +3,7 @@ import { basename, join } from "node:path";
 
 const ROOT = process.cwd();
 const CONTENT_DIR = join(ROOT, "content", "writing");
+const FOCUS_PATH = join(ROOT, "content", "homepage-focus.md");
 const OUTPUT_DIR = join(ROOT, "dist", "writing");
 const SITE_URL = "https://raphaelonuku.com";
 
@@ -54,6 +55,10 @@ function parseDocument(source, filename) {
 function slugify(value) {
   return String(value).normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function categoryClass(value) {
+  return `category-${slugify(value || "Reflections")}`;
 }
 
 function renderInline(text) {
@@ -194,6 +199,7 @@ function articlePage(article) {
   const subtitle = escapeHtml(article.subtitle);
   const summary = escapeHtml(article.summary);
   const category = escapeHtml(article.category);
+  const categoryStyle = categoryClass(article.category);
   const series = article.series ? ` · ${escapeHtml(article.series)}` : "";
   const socialImagePath = article.social_image || article.image || "/assets/social-preview.jpg";
   const socialImage = `${SITE_URL}${socialImagePath}${article.social_image ? "?v=20260905" : ""}`;
@@ -211,14 +217,15 @@ function articlePage(article) {
     author: { "@type": "Person", name: "Raphael Onuku", url: SITE_URL }
   }).replaceAll("<", "\\u003c");
   return `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="${summary}"><link rel="canonical" href="${SITE_URL}/writing/${article.slug}/"><meta property="og:type" content="article"><meta property="og:title" content="${title}"><meta property="og:description" content="${subtitle || summary}"><meta property="og:url" content="${SITE_URL}/writing/${article.slug}/"><meta property="og:image" content="${socialImage}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="article:published_time" content="${escapeHtml(article.date)}"><meta property="article:author" content="Raphael Onuku"><meta property="article:section" content="${category}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${title}"><meta name="twitter:description" content="${subtitle || summary}"><meta name="twitter:image" content="${socialImage}"><meta name="theme-color" content="#07111f"><title>${title} | Raphael Onuku</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/assets/favicon.svg?v=2" type="image/svg+xml"><link rel="icon" href="/assets/favicon-32.png?v=2" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2"><link rel="stylesheet" href="${prefix}assets/styles.css?v=20260906a"><script type="application/ld+json">${articleSchema}</script></head>
-<body><a class="skip-link" href="#main">Skip to content</a>${nav(prefix)}<main id="main"><header class="page-hero article-hero"><div class="article-hero-inner"><p class="eyebrow">${category}${series}</p><h1>${title}</h1>${subtitle ? `<p class="article-deck">${subtitle}</p>` : ""}<div class="article-meta"><span>By Raphael Onuku</span><time datetime="${escapeHtml(article.date)}">${escapeHtml(formatDate(article.date))}</time><span>${article.minutes} minute read</span></div></div></header>${cover}<div class="article-shell"><aside class="article-aside"><p>${category}</p><a href="../">← All writing</a></aside><article class="article-body">${articleContent}</article></div><section class="section article-next"><p class="kicker">More writing</p><h2>Ideas, experiences, and practical guidance.</h2><p>Return to the Writing collection for more reflections, mentorship, science, community, and announcements.</p><a class="button primary" href="../">Return to Writing <span class="arrow">↗</span></a></section></main><footer class="footer"><div class="footer-meta"><span>Raphael Onuku</span>${socials(prefix)}<span>© <span data-year></span></span></div></footer><script src="${prefix}assets/site.js"></script></body></html>`;
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="${summary}"><link rel="canonical" href="${SITE_URL}/writing/${article.slug}/"><meta property="og:type" content="article"><meta property="og:title" content="${title}"><meta property="og:description" content="${subtitle || summary}"><meta property="og:url" content="${SITE_URL}/writing/${article.slug}/"><meta property="og:image" content="${socialImage}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="article:published_time" content="${escapeHtml(article.date)}"><meta property="article:author" content="Raphael Onuku"><meta property="article:section" content="${category}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${title}"><meta name="twitter:description" content="${subtitle || summary}"><meta name="twitter:image" content="${socialImage}"><meta name="theme-color" content="#07111f"><title>${title} | Raphael Onuku</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/assets/favicon.svg?v=2" type="image/svg+xml"><link rel="icon" href="/assets/favicon-32.png?v=2" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2"><link rel="stylesheet" href="${prefix}assets/styles.css?v=20260906c"><script type="application/ld+json">${articleSchema}</script></head>
+<body class="writing-entry ${categoryStyle}"><a class="skip-link" href="#main">Skip to content</a>${nav(prefix)}<main id="main"><header class="page-hero article-hero"><div class="article-hero-inner"><p class="eyebrow">${category}${series}</p><h1>${title}</h1>${subtitle ? `<p class="article-deck">${subtitle}</p>` : ""}<div class="article-meta"><span>By Raphael Onuku</span><time datetime="${escapeHtml(article.date)}">${escapeHtml(formatDate(article.date))}</time><span>${article.minutes} minute read</span></div></div></header>${cover}<div class="article-shell"><aside class="article-aside"><p>${category}</p><a href="../">← All writing</a></aside><article class="article-body">${articleContent}</article></div><section class="section article-next"><p class="kicker">More writing</p><h2>Ideas, experiences, and practical guidance.</h2><p>Return to the Writing collection for more reflections, mentorship, science, community, and announcements.</p><a class="button primary" href="../">Return to Writing <span class="arrow">↗</span></a></section></main><footer class="footer"><div class="footer-meta"><span>Raphael Onuku</span>${socials(prefix)}<span>© <span data-year></span></span></div></footer><script src="${prefix}assets/site.js?v=20260906c"></script></body></html>`;
 }
 
 function card(article, featured = false) {
   const link = `${article.slug}/`;
-  if (featured) return `<article class="writing-feature"><div class="writing-feature-meta"><span>${escapeHtml(article.category)}</span><span>${escapeHtml(formatDate(article.date))}</span><span>${article.minutes} minute read</span></div><div class="writing-feature-body"><h2><a href="${link}">${escapeHtml(article.title)}</a></h2><p>${escapeHtml([article.series, article.subtitle].filter(Boolean).join(". "))}</p><p>${escapeHtml(article.summary)}</p><a class="button primary" href="${link}">Continue reading <span class="arrow">↗</span></a></div></article>`;
-  return `<article class="writing-card"><p class="writing-card-meta">${escapeHtml(article.category)} · ${escapeHtml(formatDate(article.date))}</p><h3><a href="${link}">${escapeHtml(article.title)}</a></h3><p>${escapeHtml(article.summary)}</p><a class="text-link" href="${link}">Read <span aria-hidden="true">↗</span></a></article>`;
+  const style = categoryClass(article.category);
+  if (featured) return `<article class="writing-feature ${style}" data-writing-category="${style}"><div class="writing-feature-meta"><span>${escapeHtml(article.category)}</span><span>${escapeHtml(formatDate(article.date))}</span><span>${article.minutes} minute read</span></div><div class="writing-feature-body"><h2><a href="${link}">${escapeHtml(article.title)}</a></h2><p>${escapeHtml([article.series, article.subtitle].filter(Boolean).join(". "))}</p><p>${escapeHtml(article.summary)}</p><a class="button primary" href="${link}">Continue reading <span class="arrow">↗</span></a></div></article>`;
+  return `<article class="writing-card ${style}" data-writing-category="${style}"><p class="writing-card-meta">${escapeHtml(article.category)} · ${escapeHtml(formatDate(article.date))}</p><h3><a href="${link}">${escapeHtml(article.title)}</a></h3><p>${escapeHtml(article.summary)}</p><a class="text-link" href="${link}">Read <span aria-hidden="true">↗</span></a></article>`;
 }
 
 function writingArchive(articles) {
@@ -241,8 +248,8 @@ function writingIndex(articles) {
   const featured = articles[0];
   const archive = writingArchive(articles.slice(1));
   return `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Essays, reflections, mentorship guidance, and announcements from Raphael Onuku."><link rel="canonical" href="${SITE_URL}/writing/"><meta property="og:type" content="website"><meta property="og:title" content="Writing | Raphael Onuku"><meta property="og:description" content="Ideas worth sharing on opportunity, mentorship, science, community, and life."><meta property="og:url" content="${SITE_URL}/writing/"><meta property="og:image" content="${SITE_URL}/assets/social-preview.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Writing | Raphael Onuku"><meta name="twitter:description" content="Ideas worth sharing on opportunity, mentorship, science, community, and life."><meta name="twitter:image" content="${SITE_URL}/assets/social-preview.jpg"><meta name="theme-color" content="#07111f"><title>Writing | Raphael Onuku</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/assets/favicon.svg?v=2" type="image/svg+xml"><link rel="icon" href="/assets/favicon-32.png?v=2" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2"><link rel="stylesheet" href="../assets/styles.css?v=20260906a"></head>
-<body><a class="skip-link" href="#main">Skip to content</a>${nav("../")}<main id="main"><header class="page-hero"><div class="writing-intro"><p class="eyebrow">Writing</p><h1>Ideas worth sharing.</h1><p class="intro">Reflections on opportunity, mentorship, science, community, and the experiences that shape a life. This is also where I share announcements that may help others move forward.</p></div></header>${featured ? `<section class="section"><p class="kicker">Featured writing</p>${card(featured, true)}</section>` : ""}${archive}<section class="section blue"><div class="section-head"><p class="kicker">The notebook</p><div><h2>Experience becomes useful when it is shared.</h2><p class="section-lede">This collection will grow across personal reflections, mentorship, science and society, community work, and timely announcements.</p><div class="writing-categories" aria-label="Writing categories"><span>Reflections</span><span>Experiences</span><span>Mentorship</span><span>Science and Society</span><span>Community</span><span>Announcements</span></div></div></div></section></main><footer class="footer"><div class="footer-call"><h2>Words can become <span>direction.</span></h2><a class="button primary" href="../contact/">Start a conversation <span class="arrow">↗</span></a></div><div class="footer-meta"><span>Raphael Onuku</span>${socials("../")}<span>© <span data-year></span></span></div></footer><script src="../assets/site.js"></script></body></html>`;
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Essays, reflections, mentorship guidance, and announcements from Raphael Onuku."><link rel="canonical" href="${SITE_URL}/writing/"><meta property="og:type" content="website"><meta property="og:title" content="Writing | Raphael Onuku"><meta property="og:description" content="Ideas worth sharing on opportunity, mentorship, science, community, and life."><meta property="og:url" content="${SITE_URL}/writing/"><meta property="og:image" content="${SITE_URL}/assets/social-preview.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Writing | Raphael Onuku"><meta name="twitter:description" content="Ideas worth sharing on opportunity, mentorship, science, community, and life."><meta name="twitter:image" content="${SITE_URL}/assets/social-preview.jpg"><meta name="theme-color" content="#07111f"><title>Writing | Raphael Onuku</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/assets/favicon.svg?v=2" type="image/svg+xml"><link rel="icon" href="/assets/favicon-32.png?v=2" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2"><link rel="stylesheet" href="../assets/styles.css?v=20260906c"></head>
+<body class="writing-index"><a class="skip-link" href="#main">Skip to content</a>${nav("../")}<main id="main"><header class="page-hero writing-hero"><div class="writing-intro"><p class="eyebrow">Writing</p><h1>Ideas worth sharing.</h1><p class="intro">Reflections on opportunity, mentorship, science, community, and the experiences that shape a life. This is also where I share announcements that may help others move forward.</p></div></header>${featured ? `<section class="section"><p class="kicker">Featured writing</p>${card(featured, true)}</section>` : ""}${archive}<section class="section blue"><div class="section-head"><p class="kicker">The notebook</p><div><h2>Experience becomes useful when it is shared.</h2><p class="section-lede">This collection will grow across personal reflections, mentorship, science and society, community work, and timely announcements.</p><div class="writing-categories" aria-label="Writing categories"><span>Reflections</span><span>Experiences</span><span>Mentorship</span><span>Science and Society</span><span>Community</span><span>Announcements</span></div></div></div></section></main><footer class="footer"><div class="footer-call"><h2>Words can become <span>direction.</span></h2><a class="button primary" href="../contact/">Start a conversation <span class="arrow">↗</span></a></div><div class="footer-meta"><span>Raphael Onuku</span>${socials("../")}<span>© <span data-year></span></span></div></footer><script src="../assets/site.js?v=20260906c"></script></body></html>`;
 }
 
 async function updateHomepage(featured) {
@@ -254,6 +261,20 @@ async function updateHomepage(featured) {
   const block = `${start}\n    <section class="section writing-teaser"><div class="writing-teaser-grid" data-reveal><p class="kicker">Latest writing · ${escapeHtml(featured.category)}</p><div><h2>${escapeHtml(featured.title)}</h2><p>${escapeHtml(featured.summary)}</p><a class="button" href="writing/${featured.slug}/">Continue reading <span class="arrow">↗</span></a></div></div></section>\n    ${end}`;
   const pattern = new RegExp(`${start}[\\s\\S]*?${end}`);
   if (!pattern.test(homepage)) throw new Error("Homepage writing markers are missing");
+  await writeFile(homepagePath, homepage.replace(pattern, block));
+}
+
+async function updateHomepageFocus() {
+  const homepagePath = join(ROOT, "dist", "index.html");
+  const { data } = parseDocument(await readFile(FOCUS_PATH, "utf8"), "homepage-focus.md");
+  let homepage = await readFile(homepagePath, "utf8");
+  const start = "<!-- CURRENT_FOCUS_START -->";
+  const end = "<!-- CURRENT_FOCUS_END -->";
+  const items = [data.focus_1, data.focus_2, data.focus_3].map(value => String(value || "").trim()).filter(Boolean);
+  const list = items.map((item, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span><p>${escapeHtml(item)}</p></li>`).join("");
+  const block = `${start}\n    <section class="section current-focus" data-reveal><div class="current-focus-shell"><div><p class="kicker">${escapeHtml(data.label || "Currently")}</p><h2>${escapeHtml(data.heading || "Questions in motion")}</h2>${data.introduction ? `<p>${escapeHtml(data.introduction)}</p>` : ""}</div><ol class="current-focus-list">${list}</ol></div></section>\n    ${end}`;
+  const pattern = new RegExp(`${start}[\\s\\S]*?${end}`);
+  if (!pattern.test(homepage)) throw new Error("Homepage current-focus markers are missing");
   await writeFile(homepagePath, homepage.replace(pattern, block));
 }
 
@@ -286,6 +307,7 @@ async function main() {
   }
   await writeFile(join(OUTPUT_DIR, "index.html"), writingIndex(articles));
   await updateHomepage(articles[0]);
+  await updateHomepageFocus();
   await writeSearchFiles(articles);
   console.log(`Built ${articles.length} published writing entr${articles.length === 1 ? "y" : "ies"}`);
 }

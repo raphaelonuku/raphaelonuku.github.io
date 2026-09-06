@@ -72,3 +72,39 @@ if (orbitAnimation) {
     orbitAnimation.classList.add('is-visible');
   }
 }
+
+document.querySelectorAll('[data-pathway]').forEach((pathway) => {
+  const steps = [...pathway.querySelectorAll('[data-pathway-step]')];
+  const detail = pathway.querySelector('[data-pathway-detail]:not([data-pathway-step])');
+  const activate = (selected) => {
+    steps.forEach((step) => {
+      const active = step === selected;
+      step.classList.toggle('is-active', active);
+      step.setAttribute('aria-pressed', String(active));
+    });
+    if (detail) detail.textContent = selected.dataset.pathwayDetail;
+  };
+  steps.forEach((step) => {
+    step.addEventListener('click', () => activate(step));
+    step.addEventListener('focus', () => activate(step));
+  });
+});
+
+document.querySelectorAll('[data-publication-filters]').forEach((filters) => {
+  const section = filters.closest('.publication-explorer');
+  const buttons = [...filters.querySelectorAll('[data-publication-filter]')];
+  const publications = [...section.querySelectorAll('[data-topics]')];
+  const count = section.querySelector('[data-publication-count]');
+  const applyFilter = (selected) => {
+    const topic = selected.dataset.publicationFilter;
+    let visible = 0;
+    publications.forEach((publication) => {
+      const show = topic === 'all' || publication.dataset.topics.split(' ').includes(topic);
+      publication.hidden = !show;
+      if (show) visible += 1;
+    });
+    buttons.forEach((button) => button.setAttribute('aria-pressed', String(button === selected)));
+    if (count) count.textContent = `${visible} publication${visible === 1 ? '' : 's'}`;
+  };
+  buttons.forEach((button) => button.addEventListener('click', () => applyFilter(button)));
+});

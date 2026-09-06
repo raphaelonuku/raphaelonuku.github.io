@@ -7,6 +7,33 @@ media:
     extensions: [jpg, jpeg, png, webp, gif]
 
 content:
+  - name: homepage_focus
+    label: Homepage focus
+    type: file
+    path: content/homepage-focus.md
+    format: yaml-frontmatter
+    operations:
+      delete: false
+    fields:
+      - name: label
+        label: Small heading
+        type: string
+      - name: heading
+        label: Main heading
+        type: string
+      - name: introduction
+        label: Introduction
+        type: text
+      - name: focus_1
+        label: First focus
+        type: string
+      - name: focus_2
+        label: Second focus
+        type: string
+      - name: focus_3
+        label: Third focus
+        type: string
+
   - name: writing
     label: Writing
     type: collection

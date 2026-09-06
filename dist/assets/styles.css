@@ -682,25 +682,6 @@ a.initiative-logo:focus-visible {
   50% { transform: translate3d(-24px,16px,0) rotate(6deg); }
 }
 
-.current-focus { padding-top: 0; }
-.current-focus-shell {
-  display: grid;
-  grid-template-columns: minmax(250px,.7fr) minmax(0,1.3fr);
-  gap: clamp(2rem,7vw,7rem);
-  padding: clamp(2rem,5vw,4.5rem);
-  border: 1px solid var(--line);
-  background:
-    radial-gradient(circle at 92% 15%, rgba(98,229,255,.13), transparent 28%),
-    linear-gradient(135deg, rgba(255,255,255,.86), rgba(245,247,242,.6));
-  box-shadow: 1rem 1rem 0 rgba(0,39,76,.055);
-}
-.current-focus-shell h2 { margin-top: .8rem; font-size: clamp(2.6rem,5vw,5rem); }
-.current-focus-shell > div > p:last-child { max-width: 34rem; color: var(--muted); }
-.current-focus-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
-.current-focus-list li { display: grid; grid-template-columns: 54px 1fr; gap: 1rem; align-items: center; padding: 1.25rem 0; border-bottom: 1px solid var(--line); }
-.current-focus-list span { color: var(--blue); font-family: var(--mono); font-size: .78rem; font-weight: 800; }
-.current-focus-list p { margin: 0; font-size: clamp(1rem,1.7vw,1.25rem); font-weight: 720; }
-
 .discovery-pathway { padding-bottom: clamp(4rem,7vw,7rem); }
 .pathway-shell { position: relative; padding: clamp(2rem,5vw,4rem); color: var(--white); background: var(--ink); overflow: hidden; }
 .pathway-shell::before { content: ""; position: absolute; width: 440px; height: 440px; right: -180px; top: -250px; border: 1px solid rgba(98,229,255,.18); border-radius: 50%; box-shadow: 0 0 0 70px rgba(98,229,255,.025), 0 0 0 140px rgba(255,203,5,.018); }
@@ -776,7 +757,6 @@ a.initiative-logo:focus-visible {
 .video-card:hover { transform: translateY(-4px); border-color: rgba(98,229,255,.55); box-shadow: 0 22px 50px rgba(7,17,31,.22); }
 
 @media (max-width: 900px) {
-  .current-focus-shell { grid-template-columns: 1fr; }
   .pathway-track { grid-template-columns: 1fr; gap: 1rem; }
   .pathway-track::before { left: 30px; right: auto; top: 5%; bottom: 5%; width: 1px; height: auto; }
   .pathway-track::after { left: 26px; top: 5%; width: 9px; height: 42px; animation-name: pathway-signal-mobile; }
@@ -789,11 +769,11 @@ a.initiative-logo:focus-visible {
 }
 
 @media (max-width: 600px) {
-  .current-focus-shell { padding: 1.5rem; box-shadow: .5rem .5rem 0 rgba(0,39,76,.055); }
   .pathway-shell { padding: 1.5rem; }
   .pathway-detail { margin-top: 2rem; }
-  .journey-map svg { min-width: 660px; transform: translateX(-165px); }
-  .journey-stop text { font-size: 14px; }
+  .journey-map svg { width: 100%; min-width: 0; height: auto; transform: none; }
+  .journey-stop text { font-size: 24px; }
+  .journey-stop > circle:first-child { transform: scale(1.25); transform-box: fill-box; transform-origin: center; }
   .publication-filter { display: grid; grid-template-columns: 1fr 1fr; }
   .publication-filter button { width: 100%; }
   .publication-tags { grid-column: 1 / -1; }

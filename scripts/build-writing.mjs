@@ -3,7 +3,6 @@ import { basename, join } from "node:path";
 
 const ROOT = process.cwd();
 const CONTENT_DIR = join(ROOT, "content", "writing");
-const FOCUS_PATH = join(ROOT, "content", "homepage-focus.md");
 const OUTPUT_DIR = join(ROOT, "dist", "writing");
 const SITE_URL = "https://raphaelonuku.com";
 
@@ -264,20 +263,6 @@ async function updateHomepage(featured) {
   await writeFile(homepagePath, homepage.replace(pattern, block));
 }
 
-async function updateHomepageFocus() {
-  const homepagePath = join(ROOT, "dist", "index.html");
-  const { data } = parseDocument(await readFile(FOCUS_PATH, "utf8"), "homepage-focus.md");
-  let homepage = await readFile(homepagePath, "utf8");
-  const start = "<!-- CURRENT_FOCUS_START -->";
-  const end = "<!-- CURRENT_FOCUS_END -->";
-  const items = [data.focus_1, data.focus_2, data.focus_3].map(value => String(value || "").trim()).filter(Boolean);
-  const list = items.map((item, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span><p>${escapeHtml(item)}</p></li>`).join("");
-  const block = `${start}\n    <section class="section current-focus" data-reveal><div class="current-focus-shell"><div><p class="kicker">${escapeHtml(data.label || "Currently")}</p><h2>${escapeHtml(data.heading || "Questions in motion")}</h2>${data.introduction ? `<p>${escapeHtml(data.introduction)}</p>` : ""}</div><ol class="current-focus-list">${list}</ol></div></section>\n    ${end}`;
-  const pattern = new RegExp(`${start}[\\s\\S]*?${end}`);
-  if (!pattern.test(homepage)) throw new Error("Homepage current-focus markers are missing");
-  await writeFile(homepagePath, homepage.replace(pattern, block));
-}
-
 async function writeSearchFiles(articles) {
   const staticPages = ["", "research/", "publications/", "writing/", "about/", "impact/", "media/", "contact/"];
   const urls = [
@@ -307,7 +292,6 @@ async function main() {
   }
   await writeFile(join(OUTPUT_DIR, "index.html"), writingIndex(articles));
   await updateHomepage(articles[0]);
-  await updateHomepageFocus();
   await writeSearchFiles(articles);
   console.log(`Built ${articles.length} published writing entr${articles.length === 1 ? "y" : "ies"}`);
 }

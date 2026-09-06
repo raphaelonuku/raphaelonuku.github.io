@@ -60,3 +60,15 @@ document.querySelectorAll('[data-writing-pagination]').forEach((pagination) => {
     button.addEventListener('click', () => showPage(Number(button.dataset.writingPageButton)));
   });
 });
+
+const orbitAnimation = document.querySelector('[data-orbit-animation]');
+if (orbitAnimation) {
+  if ('IntersectionObserver' in window) {
+    const orbitObserver = new IntersectionObserver(([entry]) => {
+      orbitAnimation.classList.toggle('is-visible', entry.isIntersecting);
+    }, { threshold: 0.15 });
+    orbitObserver.observe(orbitAnimation);
+  } else {
+    orbitAnimation.classList.add('is-visible');
+  }
+}

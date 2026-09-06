@@ -183,6 +183,7 @@ button, input, textarea { font: inherit; }
   min-height: 420px;
   display: grid;
   place-items: center;
+  isolation: isolate;
 }
 .orbit-card::before, .orbit-card::after {
   content: "";
@@ -190,15 +191,68 @@ button, input, textarea { font: inherit; }
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 50%;
   animation: drift 15s linear infinite;
+  animation-play-state: paused;
 }
 .orbit-card::before { width: 360px; height: 360px; }
 .orbit-card::after { width: 255px; height: 255px; animation-direction: reverse; animation-duration: 11s; }
-.peptide-ring { width: min(100%, 360px); filter: drop-shadow(0 30px 70px rgba(0,0,0,0.34)); }
+.peptide-ring {
+  width: min(100%, 360px);
+  filter: drop-shadow(0 30px 70px rgba(0,0,0,0.34));
+  transform-origin: center;
+  animation: peptide-float 10s ease-in-out infinite;
+  animation-play-state: paused;
+  will-change: transform;
+}
 .peptide-ring text { fill: var(--white); font: 700 13px var(--body); text-anchor: middle; dominant-baseline: central; }
 .peptide-ring .bond { stroke: rgba(98,229,255,0.5); stroke-width: 2; }
+.peptide-ring .bond line {
+  stroke-linecap: round;
+  animation: bond-pulse 4.9s ease-in-out infinite;
+  animation-play-state: paused;
+}
+.peptide-ring .bond line:nth-child(2) { animation-delay: 0.7s; }
+.peptide-ring .bond line:nth-child(3) { animation-delay: 1.4s; }
+.peptide-ring .bond line:nth-child(4) { animation-delay: 2.1s; }
+.peptide-ring .bond line:nth-child(5) { animation-delay: 2.8s; }
+.peptide-ring .bond line:nth-child(6) { animation-delay: 3.5s; }
+.peptide-ring .bond line:nth-child(7) { animation-delay: 4.2s; }
 .peptide-ring .node { fill: var(--ink-soft); stroke: var(--cyan); stroke-width: 2; }
 .peptide-ring .hot { stroke: var(--maize); }
+.peptide-ring > g:not(.bond) {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: node-breathe 4.9s ease-in-out infinite;
+  animation-play-state: paused;
+}
+.peptide-ring > g:nth-of-type(3) { animation-delay: 0.7s; }
+.peptide-ring > g:nth-of-type(4) { animation-delay: 1.4s; }
+.peptide-ring > g:nth-of-type(5) { animation-delay: 2.1s; }
+.peptide-ring > g:nth-of-type(6) { animation-delay: 2.8s; }
+.peptide-ring > g:nth-of-type(7) { animation-delay: 3.5s; }
+.peptide-ring > g:nth-of-type(8) { animation-delay: 4.2s; }
+.orbit-card.is-visible::before,
+.orbit-card.is-visible::after,
+.orbit-card.is-visible .peptide-ring,
+.orbit-card.is-visible .peptide-ring .bond line,
+.orbit-card.is-visible .peptide-ring > g:not(.bond) {
+  animation-play-state: running;
+}
+.orbit-card:hover .peptide-ring {
+  filter: drop-shadow(0 30px 70px rgba(0,0,0,0.34)) drop-shadow(0 0 18px rgba(84,216,245,0.2));
+}
 @keyframes drift { to { transform: rotate(360deg); } }
+@keyframes peptide-float {
+  0%, 100% { transform: translateY(0) rotate(-1.1deg); }
+  50% { transform: translateY(-8px) rotate(1.1deg); }
+}
+@keyframes bond-pulse {
+  0%, 18%, 100% { stroke: rgba(98,229,255,0.34); stroke-width: 2; }
+  7% { stroke: rgba(255,203,5,0.95); stroke-width: 3.4; }
+}
+@keyframes node-breathe {
+  0%, 18%, 100% { transform: scale(1); filter: brightness(1); }
+  7% { transform: scale(1.045); filter: brightness(1.28); }
+}
 
 .section { padding: clamp(5rem, 9vw, 9rem) max(1rem, calc((100vw - var(--max)) / 2)); }
 .section.dark { background: var(--ink); color: var(--white); }

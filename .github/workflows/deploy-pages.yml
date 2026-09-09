@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
 
 permissions:
   contents: read
@@ -29,6 +31,10 @@ jobs:
           node-version: 22
       - name: Build writing pages
         run: npm run build
+      - name: Install writing studio
+        run: npm ci --prefix sanity-studio
+      - name: Build writing studio
+        run: npm run build --prefix sanity-studio
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site

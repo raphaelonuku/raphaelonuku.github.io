@@ -1,5 +1,6 @@
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
+import { fetchSanityWriting, portableTextToHtml } from "./sanity-content.mjs";
 
 const ROOT = process.cwd();
 const CONTENT_DIR = join(ROOT, "content", "writing");
@@ -183,6 +184,43 @@ function normalizeArticle(data, body, file) {
   };
 }
 
+function portableTextPlainText(blocks = []) {
+  return (blocks || [])
+    .filter(block => block?._type === "block")
+    .map(block => (block.children || []).map(child => child.text || "").join(""))
+    .join("\n\n")
+    .trim();
+}
+
+function normalizeSanityArticle(document) {
+  const title = String(document.title || "").trim() || "Untitled writing";
+  const series = String(document.series || "").trim();
+  const body = portableTextPlainText(document.body);
+  const publishedAt = String(document.publishedAt || document._createdAt || new Date().toISOString());
+  const slugTitle = series && !title.toLowerCase().includes(series.toLowerCase()) ? `${title} ${series}` : title;
+  return {
+    title,
+    subtitle: String(document.subtitle || "").trim(),
+    category: String(document.category || "").trim() || "Reflections",
+    series,
+    date: publishedAt.slice(0, 10),
+    sortKey: publishedAt,
+    summary: String(document.summary || "").trim() || body.slice(0, 180) || "A new entry from Raphael Onuku.",
+    image: String(document.image || "").trim(),
+    image_alt: String(document.image_alt || "").trim(),
+    social_image: String(document.social_image || "").trim(),
+    body,
+    contentHtml: portableTextToHtml(document.body),
+    slug: String(document.slug?.current || "").trim() || slugify(slugTitle),
+    minutes: readingTime(body)
+  };
+}
+
+function publicAssetUrl(path, fallback = "/assets/social-preview.jpg") {
+  const value = String(path || fallback);
+  return /^https?:\/\//i.test(value) ? value : `${SITE_URL}${value.startsWith("/") ? "" : "/"}${value}`;
+}
+
 function nav(prefix) {
   const links = [["Home", prefix], ["Research", `${prefix}research/`], ["Publications", `${prefix}publications/`], ["Writing", `${prefix}writing/`], ["About", `${prefix}about/`], ["Impact", `${prefix}impact/`], ["Media", `${prefix}media/`], ["Contact", `${prefix}contact/`]];
   return `<header class="site-header"><nav class="nav-shell" aria-label="Main navigation"><a class="brand" href="${prefix}"><img class="brand-mark" src="${prefix}assets/favicon.svg" alt=""><span>Raphael Onuku</span></a><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-menu">Menu</button><div class="nav-links" id="main-menu">${links.map(([label, href]) => `<a href="${href}"${label === "Writing" ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</div></nav></header>`;
@@ -200,10 +238,9 @@ function articlePage(article) {
   const category = escapeHtml(article.category);
   const categoryStyle = categoryClass(article.category);
   const series = article.series ? ` · ${escapeHtml(article.series)}` : "";
-  const socialImagePath = article.social_image || article.image || "/assets/social-preview.jpg";
-  const socialImage = `${SITE_URL}${socialImagePath}${article.social_image ? "?v=20260905" : ""}`;
+  const socialImage = publicAssetUrl(article.social_image || article.image);
   const cover = article.image ? `<figure class="article-cover"><img src="${escapeHtml(article.image)}" alt="${escapeHtml(article.image_alt || "")}"></figure>` : "";
-  const articleContent = article.body ? markdownToHtml(article.body) : "<p>This entry has no article text yet.</p>";
+  const articleContent = article.contentHtml || (article.body ? markdownToHtml(article.body) : "<p>This entry has no article text yet.</p>");
   const articleSchema = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Article",
@@ -277,12 +314,21 @@ async function writeSearchFiles(articles) {
 
 async function main() {
   const files = (await readdir(CONTENT_DIR)).filter(file => file.endsWith(".md"));
-  const articles = [];
+  const markdownArticles = [];
   for (const file of files) {
     const { data, body } = parseDocument(await readFile(join(CONTENT_DIR, file), "utf8"), file);
     if (data.published !== true) continue;
-    articles.push(normalizeArticle(data, body, file));
+    markdownArticles.push(normalizeArticle(data, body, file));
   }
+  let sanityArticles = [];
+  try {
+    sanityArticles = (await fetchSanityWriting()).map(normalizeSanityArticle);
+  } catch (error) {
+    console.warn(`Sanity content was unavailable. Continuing with the existing articles. ${error.message}`);
+  }
+  const articlesBySlug = new Map(markdownArticles.map(article => [article.slug, article]));
+  for (const article of sanityArticles) articlesBySlug.set(article.slug, article);
+  const articles = [...articlesBySlug.values()];
   articles.sort((a, b) => String(b.sortKey).localeCompare(String(a.sortKey)));
   await mkdir(OUTPUT_DIR, { recursive: true });
   for (const article of articles) {

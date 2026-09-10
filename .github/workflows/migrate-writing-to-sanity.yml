@@ -2,6 +2,9 @@ name: Migrate writing to Sanity
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/migrate-writing-to-sanity.yml
 
 permissions:
   contents: read
@@ -22,4 +25,3 @@ jobs:
           SANITY_DATASET: production
           SANITY_WRITE_TOKEN: ${{ secrets.SANITY_WRITE_TOKEN }}
         run: node scripts/migrate-writing-to-sanity.mjs
-

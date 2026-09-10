@@ -1,4 +1,5 @@
 import { readFile, readdir } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { basename, extname, join } from "node:path";
 
 const ROOT = process.cwd();
@@ -55,6 +56,13 @@ function parseDocument(source, filename) {
 function slugify(value) {
   return String(value).normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function documentId(slug) {
+  const prefix = "writing-";
+  if (slug.length <= 120) return `${prefix}${slug}`;
+  const digest = createHash("sha256").update(slug).digest("hex").slice(0, 12);
+  return `${prefix}${slug.slice(0, 98).replace(/-+$/g, "")}-${digest}`;
 }
 
 function inlineChildren(text) {
@@ -140,7 +148,7 @@ async function migrate() {
     const socialImage = await uploadImage(String(data.social_image || "").trim());
     if (image && data.image_alt) image.alt = String(data.image_alt);
     documents.push({
-      _id: `writing-${slug}`,
+      _id: documentId(slug),
       _type: "writing",
       title,
       subtitle: String(data.subtitle || "").trim(),
@@ -165,4 +173,3 @@ async function migrate() {
 }
 
 migrate().catch(error => { console.error(error); process.exitCode = 1; });
-

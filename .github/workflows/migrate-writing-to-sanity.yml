@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - .github/workflows/migrate-writing-to-sanity.yml
+      - scripts/migrate-writing-to-sanity.mjs
 
 permissions:
   contents: read

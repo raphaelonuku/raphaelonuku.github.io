@@ -65,6 +65,12 @@ function documentId(slug) {
   return `${prefix}${slug.slice(0, 98).replace(/-+$/g, "")}-${digest}`;
 }
 
+function publicationTimestamp(date, filename) {
+  const day = String(date || new Date().toISOString().slice(0, 10)).slice(0, 10);
+  const timestamp = filename.match(/^\d{4}-\d{2}-\d{2}-(\d{2})-(\d{2})-(\d{2})-/);
+  return timestamp ? `${day}T${timestamp[1]}:${timestamp[2]}:${timestamp[3]}.000Z` : `${day}T00:00:00.000Z`;
+}
+
 function inlineChildren(text) {
   const children = [];
   const markDefs = [];
@@ -161,7 +167,7 @@ async function migrate() {
       category: String(data.category || "Reflections").trim(),
       series,
       slug: { _type: "slug", current: slug },
-      publishedAt: `${String(data.date || new Date().toISOString().slice(0, 10)).slice(0, 10)}T12:00:00.000Z`,
+      publishedAt: publicationTimestamp(data.date, filename),
       summary: String(data.summary || "").trim(),
       ...(image ? { image } : {}),
       ...(socialImage ? { socialImage } : {}),

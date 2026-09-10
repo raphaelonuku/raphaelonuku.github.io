@@ -5,9 +5,9 @@ on:
     branches: [main]
   # Sanity uses this event for immediate publication.
   workflow_dispatch:
-  # Fallback only if a webhook delivery ever fails.
+  # Hourly fallback only if a webhook delivery ever fails.
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "17 * * * *"
 
 permissions:
   contents: read

@@ -51,7 +51,10 @@ export function portableTextToHtml(blocks = []) {
     flushList();
     if (["h2", "h3", "h4"].includes(block.style)) output.push(`<${block.style}>${content}</${block.style}>`);
     else if (block.style === "blockquote") output.push(`<blockquote><p>${content}</p></blockquote>`);
-    else output.push(`<p>${content}</p>`);
+    else {
+      const paragraphs = content.split(/<br\s*\/?\s*>/i).filter(value => value.trim());
+      output.push((paragraphs.length ? paragraphs : [""]).map(value => `<p>${value}</p>`).join("\n"));
+    }
   }
   flushList();
   if (output.length && output.at(-1).startsWith("<p>")) {
@@ -68,4 +71,3 @@ export async function fetchSanityWriting() {
   const payload = await response.json();
   return Array.isArray(payload.result) ? payload.result : [];
 }
-

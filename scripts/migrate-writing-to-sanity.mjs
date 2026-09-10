@@ -137,13 +137,19 @@ async function uploadImage(sitePath) {
 async function migrate() {
   const filenames = (await readdir(CONTENT_DIR)).filter(file => file.endsWith(".md"));
   const documents = [];
+  const legacyDocumentIds = new Set();
   for (const filename of filenames) {
     const { data, body } = parseDocument(await readFile(join(CONTENT_DIR, filename), "utf8"), filename);
     if (data.published !== true) continue;
     const title = String(data.title || "Untitled writing").trim();
-    const series = String(data.series || "").trim();
-    const slugTitle = series && !title.toLowerCase().includes(series.toLowerCase()) ? `${title} ${series}` : title;
+    const rawSeries = String(data.series || "").trim();
+    const partLabel = rawSeries.match(/\bPart\s+\d+\b/i)?.[0] || "";
+    const series = partLabel || rawSeries;
+    const slugTitle = partLabel && !title.toLowerCase().includes(partLabel.toLowerCase()) ? `${title} ${partLabel}` : title;
     const slug = slugify(slugTitle);
+    const legacySlugTitle = rawSeries && !title.toLowerCase().includes(rawSeries.toLowerCase()) ? `${title} ${rawSeries}` : title;
+    const legacySlug = slugify(legacySlugTitle);
+    if (legacySlug !== slug) legacyDocumentIds.add(documentId(legacySlug));
     const image = await uploadImage(String(data.image || "").trim());
     const socialImage = await uploadImage(String(data.social_image || "").trim());
     if (image && data.image_alt) image.alt = String(data.image_alt);
@@ -166,7 +172,12 @@ async function migrate() {
   const response = await fetch(endpoint, {
     method: "POST",
     headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ mutations: documents.map(document => ({ createOrReplace: document })) })
+    body: JSON.stringify({
+      mutations: [
+        ...[...legacyDocumentIds].map(id => ({ delete: { id } })),
+        ...documents.map(document => ({ createOrReplace: document }))
+      ]
+    })
   });
   if (!response.ok) throw new Error(`Content migration failed with ${response.status} ${await response.text()}`);
   console.log(`Migrated ${documents.length} published writing entries to Sanity`);

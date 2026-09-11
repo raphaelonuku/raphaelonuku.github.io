@@ -106,12 +106,12 @@ button, input, textarea { font: inherit; }
 }
 
 .hero {
-  min-height: 100svh;
+  min-height: clamp(680px, 88svh, 900px);
   display: grid;
-  align-items: end;
+  align-items: center;
   position: relative;
   overflow: hidden;
-  padding: 8rem max(1rem, calc((100vw - var(--max)) / 2)) 4rem;
+  padding: 7.5rem max(1rem, calc((100vw - var(--max)) / 2)) 3.25rem;
   color: var(--white);
   background:
     radial-gradient(circle at 78% 25%, rgba(98,229,255,0.18), transparent 31%),
@@ -128,13 +128,14 @@ button, input, textarea { font: inherit; }
   mask-image: linear-gradient(to bottom, black, transparent 90%);
 }
 .hero-grid {
-  width: 100%;
+  width: min(100%, var(--max));
+  margin: auto;
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: 1.4fr 0.8fr;
-  gap: clamp(2rem, 7vw, 8rem);
-  align-items: end;
+  grid-template-columns: minmax(0, 1.08fr) minmax(330px, .92fr);
+  gap: clamp(2rem, 4vw, 4.5rem);
+  align-items: center;
 }
 .hero-grid > * { min-width: 0; }
 .eyebrow {
@@ -153,8 +154,8 @@ button, input, textarea { font: inherit; }
   max-width: 900px;
   margin: 0;
   font-family: var(--display);
-  font-size: clamp(4rem, 9.5vw, 9.2rem);
-  line-height: 0.82;
+  font-size: clamp(4rem, 7.6vw, 7.9rem);
+  line-height: 0.84;
   letter-spacing: -0.075em;
   text-transform: uppercase;
 }
@@ -183,26 +184,27 @@ button, input, textarea { font: inherit; }
 .orbit-card {
   margin: 0;
   position: relative;
-  min-height: 420px;
+  min-height: 390px;
   display: grid;
   place-items: center;
   isolation: isolate;
+  transform: translate(-1.25rem, -0.35rem);
 }
 .orbit-card::before, .orbit-card::after {
   content: "";
   position: absolute;
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 50%;
-  animation: drift 15s linear infinite;
+  animation: drift 8.5s linear infinite;
   animation-play-state: paused;
 }
 .orbit-card::before { width: 360px; height: 360px; }
 .orbit-card::after { width: 255px; height: 255px; animation-direction: reverse; animation-duration: 7s; }
 .peptide-ring {
-  width: min(100%, 360px);
+  width: min(100%, 340px);
   filter: drop-shadow(0 30px 70px rgba(0,0,0,0.34));
   transform-origin: center;
-  animation: peptide-float 5.8s ease-in-out infinite;
+  animation: peptide-float 4.4s ease-in-out infinite;
   animation-play-state: paused;
   will-change: transform;
 }
@@ -232,20 +234,20 @@ button, input, textarea { font: inherit; }
   filter: drop-shadow(0 0 7px rgba(255,203,5,.95));
   offset-path: path("M210 48 L337 110 L368 250 L280 358 L140 358 L52 250 L83 110 Z");
   offset-rotate: 0deg;
-  animation: peptide-signal 5.2s linear infinite;
+  animation: peptide-signal 3.8s linear infinite;
   animation-play-state: paused;
 }
 .peptide-signal-two {
   fill: var(--cyan);
   filter: drop-shadow(0 0 6px rgba(98,229,255,.9));
-  animation-delay: -2.6s;
+  animation-delay: -1.9s;
 }
 .peptide-ring .node { fill: var(--ink-soft); stroke: var(--cyan); stroke-width: 2; }
 .peptide-ring .hot { stroke: var(--maize); }
 .peptide-ring > g:not(.bond) {
   transform-box: fill-box;
   transform-origin: center;
-  animation: node-breathe 4.9s ease-in-out infinite;
+  animation: node-breathe 3.7s ease-in-out infinite;
   animation-play-state: paused;
 }
 .peptide-ring > g:nth-of-type(3) { animation-delay: 0.7s; }
@@ -268,9 +270,9 @@ button, input, textarea { font: inherit; }
 }
 @keyframes drift { to { transform: rotate(360deg); } }
 @keyframes peptide-float {
-  0%, 100% { transform: translate3d(-3px,2px,0) rotate(-2deg) scale(.985); }
-  35% { transform: translate3d(5px,-11px,0) rotate(1.5deg) scale(1.018); }
-  68% { transform: translate3d(-5px,-5px,0) rotate(.3deg) scale(1.005); }
+  0%, 100% { transform: translate3d(-6px,5px,0) rotate(-3deg) scale(.975); }
+  35% { transform: translate3d(8px,-15px,0) rotate(2.4deg) scale(1.025); }
+  68% { transform: translate3d(-9px,-7px,0) rotate(.7deg) scale(1.008); }
 }
 @keyframes energy-track { to { stroke-dashoffset: -60; } }
 @keyframes peptide-signal { to { offset-distance: 100%; } }
@@ -283,52 +285,109 @@ button, input, textarea { font: inherit; }
   7% { transform: scale(1.045); filter: brightness(1.28); }
 }
 
-/* Dynamic molecular signatures for inner-page headers */
+/* Page-specific scientific header scenes */
 .header-chemistry {
   --chem-x: 0px;
   --chem-y: 0px;
-  position: absolute;
-  z-index: 0;
-  width: min(45vw, 610px);
-  right: max(1rem, calc((100vw - var(--max)) / 2));
-  top: 50%;
-  opacity: .72;
+  position: relative;
+  z-index: 1;
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  max-width: 560px;
+  justify-self: end;
+  opacity: .9;
   pointer-events: none;
-  transform: translate3d(var(--chem-x), calc(-50% + var(--chem-y)), 0);
+  transform: translate3d(var(--chem-x), var(--chem-y), 0);
   transition: transform 500ms cubic-bezier(.2,.7,.2,1);
 }
-.header-chemistry svg { width: 100%; overflow: visible; }
-.chem-bond, .chem-ring, .chem-carbonyl {
+.header-scene { width: 100%; overflow: visible; }
+.scene-bond, .reaction-arrow, .notebook, .writing-structure, .impact-link, .about-route, .about-backbone, .media-wave, .media-frame, .receptor-pocket, .recognition-guide {
   fill: none;
-  stroke: rgba(98,229,255,.48);
+  stroke: rgba(98,229,255,.55);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
-.chem-ring { stroke: rgba(255,255,255,.2); }
-.chem-carbonyl { stroke: rgba(255,203,5,.7); }
-.chem-trace {
-  fill: none;
-  stroke: rgba(98,229,255,.62);
-  stroke-width: 2;
-  stroke-dasharray: 8 12;
-  animation: chemistry-flow 7s linear infinite;
-}
-.chem-atom { fill: var(--ink); stroke: var(--maize); stroke-width: 2; }
-.chem-atom-cyan { stroke: var(--cyan); }
-.chem-label { fill: rgba(255,255,255,.82); font: 750 14px/1 var(--mono); text-anchor: middle; dominant-baseline: central; }
-.chem-pulse { fill: var(--maize); filter: drop-shadow(0 0 8px rgba(255,203,5,.9)); offset-path: path("M42 192 L96 98 L204 98 L258 192 L204 286 L96 286 Z M258 192 L326 192 L362 130 M326 192 L384 226 L450 188"); offset-rotate: 0deg; animation: chemistry-pulse 8s linear infinite; }
-.chem-pulse-two { fill: var(--cyan); animation-delay: -4s; }
-.chem-core { transform-box: fill-box; transform-origin: center; animation: chemistry-breathe 4.6s ease-in-out infinite; }
-.page-hero[data-chemistry="publications"] .header-chemistry { opacity: .64; transform: translate3d(var(--chem-x), calc(-50% + var(--chem-y)), 0) rotate(-6deg); }
-.page-hero[data-chemistry="writing"] .chem-carbonyl, .page-hero[data-chemistry="impact"] .chem-carbonyl { stroke: rgba(255,203,5,.92); }
-.page-hero[data-chemistry="about"] .header-chemistry { opacity: .62; }
-.page-hero[data-chemistry="contact"] .chem-trace { animation-duration: 4.5s; }
-.page-hero[data-chemistry="media"] .header-chemistry { opacity: .58; }
-@keyframes chemistry-flow { to { stroke-dashoffset: -80; } }
-@keyframes chemistry-pulse { to { offset-distance: 100%; } }
-@keyframes chemistry-breathe { 0%,100% { transform: scale(.98); } 50% { transform: scale(1.025); } }
+.scene-heading { fill: var(--maize); font: 800 17px/1 var(--mono); letter-spacing: .11em; }
+.scene-note { fill: rgba(255,255,255,.55); font: 700 11px/1 var(--mono); letter-spacing: .08em; }
+
+/* Research · linear peptide scanning and Fmoc deprotection */
+.scan-site circle { fill: var(--ink-soft); stroke: var(--cyan); stroke-width: 2; animation: scan-site 7.2s ease-in-out infinite; animation-delay: var(--delay); }
+.scan-site text { fill: var(--white); font: 750 13px/1 var(--mono); text-anchor: middle; dominant-baseline: central; }
+.scan-ala { opacity: 0; animation: scan-ala 7.2s steps(1,end) infinite; animation-delay: var(--delay); }
+.scan-native { animation: scan-native 7.2s steps(1,end) infinite; animation-delay: var(--delay); }
+.reaction-arrow { stroke: rgba(255,203,5,.7); }
+.reaction-text { fill: rgba(255,255,255,.68); font: 700 12px/1 var(--mono); text-anchor: middle; }
+.product-text { fill: var(--cyan); }
+.scan-probe { fill: var(--maize); filter: drop-shadow(0 0 8px rgba(255,203,5,.9)); offset-path: path("M55 166 L145 126 L235 166 L325 126 L415 166 L505 126"); offset-rotate: 0deg; animation: scan-probe 7.2s linear infinite; }
+@keyframes scan-site { 0%,14%,100% { stroke: var(--cyan); transform: scale(1); } 4%,10% { stroke: var(--maize); transform: scale(1.14); } }
+@keyframes scan-ala { 0%,3%,12%,100% { opacity: 0; } 4%,11% { opacity: 1; } }
+@keyframes scan-native { 0%,3%,12%,100% { opacity: 1; } 4%,11% { opacity: 0; } }
+@keyframes scan-probe { to { offset-distance: 100%; } }
+
+/* Publications · structure to evidence to record */
+.publication-atom, .media-source-dot { fill: var(--maize); filter: drop-shadow(0 0 7px rgba(255,203,5,.7)); animation: atom-pulse 3.4s ease-in-out infinite; }
+.data-trace, .paper-line, .paper-figure { fill: none; stroke: var(--cyan); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.data-trace { stroke-dasharray: 320; stroke-dashoffset: 320; animation: draw-data 5s ease-in-out infinite; }
+.paper-sheet { fill: rgba(255,255,255,.035); stroke: rgba(255,255,255,.38); stroke-width: 2; }
+.paper-line { stroke: rgba(255,255,255,.32); }
+.paper-figure { stroke: var(--maize); }
+.evidence-pulse { fill: var(--maize); offset-path: path("M245 190 H302 L390 190"); offset-rotate: 0deg; filter: drop-shadow(0 0 8px rgba(255,203,5,.9)); animation: evidence-flow 4s ease-in-out infinite; }
+@keyframes draw-data { 0%,15% { stroke-dashoffset: 320; } 55%,100% { stroke-dashoffset: 0; } }
+@keyframes evidence-flow { 0% { offset-distance: 0%; opacity: 0; } 12%,88% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+@keyframes atom-pulse { 50% { transform: scale(1.28); transform-origin: center; transform-box: fill-box; } }
+
+/* Writing · a molecular sketch becoming a notebook trace */
+.notebook { stroke: rgba(255,255,255,.3); }
+.writing-structure { stroke: rgba(98,229,255,.35); }
+.ink-stroke { fill: none; stroke: var(--maize); stroke-width: 3; stroke-dasharray: 1180; stroke-dashoffset: 1180; animation: write-structure 8s ease-in-out infinite; }
+.ink-tip { fill: var(--cyan); filter: drop-shadow(0 0 7px rgba(98,229,255,.9)); offset-path: path("M52 184 L105 92 L211 92 L264 184 L211 276 L105 276 Z M264 184 H326 M330 100 H478 M330 134 H462 M330 168 H482"); offset-rotate: 0deg; animation: ink-tip 8s ease-in-out infinite; }
+@keyframes write-structure { 0%,8% { stroke-dashoffset: 1180; } 70%,100% { stroke-dashoffset: 0; } }
+@keyframes ink-tip { 0% { offset-distance: 0%; opacity: 0; } 8%,70% { opacity: 1; } 76%,100% { offset-distance: 100%; opacity: 0; } }
+
+/* About · training journey */
+.about-route { stroke-dasharray: 7 9; }
+.about-backbone { stroke: rgba(255,255,255,.25); }
+.about-stop circle { fill: var(--ink-soft); stroke: var(--cyan); stroke-width: 3; animation: stop-pulse 5.4s ease-in-out infinite; }
+.about-stop text { fill: rgba(255,255,255,.72); font: 750 10px/1 var(--mono); text-anchor: middle; }
+.stop-two circle { animation-delay: 1.8s; }
+.stop-three circle { animation-delay: 3.6s; }
+.journey-marker { fill: var(--maize); filter: drop-shadow(0 0 8px rgba(255,203,5,.9)); offset-path: path("M62 236 Q158 74 276 176 T505 102"); offset-rotate: 0deg; animation: journey-header 7s linear infinite; }
+@keyframes journey-header { to { offset-distance: 100%; } }
+@keyframes stop-pulse { 0%,25%,100% { stroke: var(--cyan); } 10% { stroke: var(--maize); filter: drop-shadow(0 0 8px rgba(255,203,5,.7)); } }
+
+/* Impact · mentorship spreading through a network */
+.impact-link { stroke-dasharray: 5 8; animation: network-flow 5s linear infinite; }
+.impact-node circle { fill: var(--ink-soft); stroke: var(--cyan); stroke-width: 2; animation: impact-node 6s ease-in-out infinite; animation-delay: var(--delay, 0s); }
+.impact-node text { fill: var(--white); font: 750 9px/1 var(--mono); text-anchor: middle; dominant-baseline: central; }
+.impact-core circle { stroke: var(--maize); }
+.impact-core text { font-size: 12px; }
+.impact-signal { fill: var(--maize); filter: drop-shadow(0 0 8px rgba(255,203,5,.9)); offset-rotate: 0deg; animation: network-signal 3.8s ease-in-out infinite; }
+.signal-a { offset-path: path("M280 170 L120 92"); }
+.signal-b { offset-path: path("M280 170 L468 250"); animation-delay: -1.9s; }
+@keyframes network-flow { to { stroke-dashoffset: -65; } }
+@keyframes network-signal { 0% { offset-distance: 0%; opacity: 0; } 15%,85% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+@keyframes impact-node { 50% { transform: scale(1.08); transform-box: fill-box; transform-origin: center; } }
+
+/* Media · molecular information becoming a public signal */
+.media-wave { stroke: var(--maize); stroke-dasharray: 9 8; animation: media-wave 4s linear infinite; }
+.media-frame { stroke: rgba(255,255,255,.4); }
+.media-play { fill: rgba(98,229,255,.7); }
+.media-photon { fill: var(--cyan); filter: drop-shadow(0 0 8px rgba(98,229,255,.9)); offset-path: path("M252 170 C286 110 302 230 318 170 S350 110 366 170 S398 230 414 170 S446 110 462 170"); offset-rotate: 0deg; animation: media-photon 4s linear infinite; }
+@keyframes media-wave { to { stroke-dashoffset: -70; } }
+@keyframes media-photon { to { offset-distance: 100%; } }
+
+/* Contact · ligand and receptor recognition */
+.receptor-pocket { fill: rgba(98,229,255,.035); stroke: rgba(98,229,255,.52); }
+.contact-ligand { transform-origin: center; animation: ligand-dock 5.8s ease-in-out infinite; }
+.contact-ligand path { fill: none; stroke: var(--maize); stroke-width: 2.5; }
+.contact-ligand circle { fill: var(--ink); stroke: var(--cyan); stroke-width: 2; }
+.recognition-guide { stroke-dasharray: 6 9; }
+.recognition-flash { fill: var(--maize); opacity: 0; filter: drop-shadow(0 0 12px rgba(255,203,5,.95)); animation: recognition-flash 5.8s ease-in-out infinite; }
+@keyframes ligand-dock { 0%,100% { transform: translateX(-28px) rotate(-3deg); } 50%,62% { transform: translateX(84px) rotate(3deg); } }
+@keyframes recognition-flash { 0%,44%,70%,100% { opacity: 0; transform: scale(.4); transform-box: fill-box; transform-origin: center; } 52%,62% { opacity: 1; transform: scale(1.5); } }
 
 .section { padding: clamp(5rem, 9vw, 9rem) max(1rem, calc((100vw - var(--max)) / 2)); }
 .section.dark { background: var(--ink); color: var(--white); }
@@ -415,8 +474,10 @@ button, input, textarea { font: inherit; }
 .impact-grid blockquote { margin: 0; font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 5.5rem); line-height: 1; letter-spacing: -0.05em; }
 .impact-grid p { margin: 0; font-size: 1.18rem; }
 
-.page-hero { min-height: 62vh; padding: 11rem max(1rem, calc((100vw - var(--max)) / 2)) 5rem; display: grid; align-items: end; background: var(--ink); color: var(--white); }
-.page-hero .intro { max-width: 850px; margin: 2rem 0 0; color: rgba(255,255,255,0.68); font-size: clamp(1.1rem, 2vw, 1.45rem); }
+.page-hero { min-height: clamp(440px, 52vh, 610px); padding: 7.5rem max(1rem, calc((100vw - var(--max)) / 2)) 3.5rem; display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(300px, .88fr); gap: clamp(2rem, 5vw, 5rem); align-items: center; background: var(--ink); color: var(--white); }
+.page-hero > :not(.header-chemistry) { grid-column: 1; grid-row: 1; min-width: 0; }
+.page-hero h1 { max-width: 760px; font-size: clamp(3rem, 5vw, 5.5rem); }
+.page-hero .intro { max-width: 720px; margin: 1.5rem 0 0; color: rgba(255,255,255,0.68); font-size: clamp(1.05rem, 1.55vw, 1.3rem); }
 .content-grid { display: grid; grid-template-columns: 0.55fr 1.45fr; gap: clamp(2rem, 7vw, 7rem); }
 .content-grid + .content-grid { margin-top: 6rem; padding-top: 6rem; border-top: 1px solid var(--line); }
 .content-grid h2 { position: sticky; top: 110px; align-self: start; font-size: clamp(2.2rem, 4vw, 4rem); }
@@ -478,7 +539,7 @@ button, input, textarea { font: inherit; }
 .writing-teaser p { max-width: 720px; margin: 1.5rem 0 0; font-size: 1.15rem; }
 .writing-teaser .button { margin-top: 2rem; }
 
-.article-hero { min-height: auto; padding-bottom: clamp(4rem, 8vw, 7rem); }
+.article-hero { min-height: auto; grid-template-columns: 1fr; padding-bottom: clamp(4rem, 8vw, 7rem); }
 .article-hero-inner { width: min(100%, 1080px); }
 .article-hero h1 { max-width: 1050px; font-family: var(--serif); font-size: clamp(3rem, 7.2vw, 7.4rem); line-height: 0.96; letter-spacing: -0.06em; text-transform: none; }
 .article-deck { max-width: 800px; margin: 2rem 0 0; color: rgba(255,255,255,0.72); font-size: clamp(1.15rem, 2vw, 1.5rem); }
@@ -531,7 +592,8 @@ button, input, textarea { font: inherit; }
 [data-reveal].visible { opacity: 1; transform: translateY(0); }
 
 @media (max-width: 900px) {
-  .page-hero[data-chemistry] .header-chemistry { width: min(82vw, 500px); right: -24vw; top: 45%; opacity: .43; }
+  .page-hero:not(.article-hero) { grid-template-columns: minmax(0, 1fr) minmax(250px, .7fr); gap: 1.5rem; }
+  .page-hero[data-chemistry] .header-chemistry { width: 100%; max-width: 430px; opacity: .85; }
   .menu-toggle { display: block; }
   .nav-links { display: none; position: absolute; inset: 74px 0 auto; padding: 1.5rem 1rem 2rem; background: var(--ink); flex-direction: column; align-items: flex-start; }
   .nav-links.open { display: flex; }
@@ -556,13 +618,17 @@ button, input, textarea { font: inherit; }
 }
 
 @media (max-width: 600px) {
-  .page-hero[data-chemistry] .header-chemistry { width: 104vw; right: -52vw; top: 40%; opacity: .36; }
-  .hero { padding-top: 7rem; }
-  .hero h1 { max-width: 100%; font-size: clamp(3rem, 16vw, 4.5rem); line-height: 0.88; letter-spacing: -0.08em; }
+  .page-hero:not(.article-hero) { min-height: auto; grid-template-columns: 1fr; gap: 1.4rem; padding: 7.2rem 1rem 2.5rem; }
+  .page-hero[data-chemistry] .header-chemistry { grid-column: 1; grid-row: 2; width: min(100%, 440px); max-height: 205px; justify-self: center; opacity: .92; }
+  .page-hero[data-chemistry] .header-scene { max-height: 205px; }
+  .page-hero h1 { font-size: clamp(2.75rem, 13vw, 4.1rem); }
+  .page-hero .intro { margin-top: 1.15rem; font-size: 1rem; }
+  .hero { min-height: auto; padding: 6.7rem 1rem 3rem; }
+  .hero h1 { max-width: 100%; font-size: clamp(3rem, 14vw, 4.15rem); line-height: 0.9; letter-spacing: -0.075em; }
   .hero .eyebrow { position: relative; display: block; max-width: 100%; padding-left: 2.1rem; font-size: 0.7rem; line-height: 1.75; letter-spacing: 0.13em; }
   .hero .eyebrow::before { position: absolute; left: 0; top: 0.62rem; width: 1.5rem; }
   .hero-copy { max-width: 100%; font-size: 1.05rem; overflow-wrap: break-word; }
-  .orbit-card { min-height: 270px; transform: translateX(-1.1rem); }
+  .orbit-card { min-height: 260px; transform: translateX(-0.45rem); }
   .orbit-card::before { width: 250px; height: 250px; }
   .orbit-card::after { width: 185px; height: 185px; }
   .peptide-ring { width: 255px; }
@@ -730,23 +796,16 @@ a.initiative-logo:focus-visible {
   mask-image: linear-gradient(115deg, transparent 5%, #000 48%, transparent 100%);
 }
 .page-hero::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  width: min(42vw, 520px);
-  aspect-ratio: 1;
-  right: -8vw;
-  top: 18%;
-  border: 1px solid rgba(98,229,255,.2);
-  border-radius: 50%;
-  box-shadow: 0 0 0 78px rgba(255,255,255,.025), 0 0 0 156px rgba(255,255,255,.018);
-  animation: scientific-orbit 18s ease-in-out infinite;
+  content: none;
 }
 .page-hero > * { position: relative; z-index: 1; }
-@keyframes scientific-orbit {
-  0%, 100% { transform: translate3d(0,0,0) rotate(0deg); }
-  50% { transform: translate3d(-24px,16px,0) rotate(6deg); }
-}
+.page-hero[data-chemistry="research"] { background: radial-gradient(circle at 82% 32%, rgba(98,229,255,.17), transparent 31%), var(--ink); }
+.page-hero[data-chemistry="publications"] { background: radial-gradient(circle at 82% 38%, rgba(255,203,5,.12), transparent 30%), var(--ink); }
+.page-hero[data-chemistry="writing"] { background: radial-gradient(circle at 84% 34%, rgba(111,166,216,.16), transparent 31%), var(--ink); }
+.page-hero[data-chemistry="about"] { background: radial-gradient(circle at 82% 38%, rgba(98,229,255,.13), transparent 33%), var(--ink); }
+.page-hero[data-chemistry="impact"] { background: radial-gradient(circle at 82% 37%, rgba(101,197,143,.14), transparent 32%), var(--ink); }
+.page-hero[data-chemistry="media"] { background: radial-gradient(circle at 82% 34%, rgba(140,121,217,.14), transparent 31%), var(--ink); }
+.page-hero[data-chemistry="contact"] { background: radial-gradient(circle at 82% 38%, rgba(255,203,5,.1), transparent 31%), var(--ink); }
 
 .discovery-pathway { padding-bottom: clamp(4rem,7vw,7rem); }
 .pathway-shell { position: relative; padding: clamp(2rem,5vw,4rem); color: var(--white); background: var(--ink); overflow: hidden; }

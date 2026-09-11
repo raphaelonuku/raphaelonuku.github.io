@@ -73,6 +73,42 @@ if (orbitAnimation) {
   }
 }
 
+const pageHero = document.querySelector('.page-hero:not(.article-hero)');
+if (pageHero) {
+  const section = location.pathname.split('/').filter(Boolean).at(-1) || 'home';
+  pageHero.dataset.chemistry = section;
+  const chemistry = document.createElement('div');
+  chemistry.className = 'header-chemistry';
+  chemistry.setAttribute('aria-hidden', 'true');
+  chemistry.innerHTML = `<svg viewBox="0 0 500 370" focusable="false">
+    <g class="chem-core">
+      <path class="chem-ring" d="M42 192 L96 98 L204 98 L258 192 L204 286 L96 286 Z"/>
+      <path class="chem-ring" d="M78 192 L114 130 L186 130 L222 192 L186 254 L114 254 Z"/>
+      <path class="chem-bond" d="M258 192 L326 192 L384 226 L450 188"/>
+      <path class="chem-carbonyl" d="M326 192 L362 130 M334 198 L370 136"/>
+      <path class="chem-bond" d="M450 188 L482 206"/>
+      <path class="chem-trace" d="M42 192 L96 98 L204 98 L258 192 L204 286 L96 286 Z M258 192 L326 192 L362 130 M326 192 L384 226 L450 188"/>
+      <circle class="chem-atom" cx="366" cy="124" r="18"/><text class="chem-label" x="366" y="124">O</text>
+      <circle class="chem-atom chem-atom-cyan" cx="390" cy="229" r="18"/><text class="chem-label" x="390" y="229">N</text>
+      <circle class="chem-atom chem-atom-cyan" cx="456" cy="185" r="8"/>
+      <circle class="chem-pulse" r="5"/><circle class="chem-pulse chem-pulse-two" r="3.5"/>
+    </g>
+  </svg>`;
+  pageHero.prepend(chemistry);
+
+  pageHero.addEventListener('pointermove', (event) => {
+    const bounds = pageHero.getBoundingClientRect();
+    const x = ((event.clientX - bounds.left) / bounds.width - .5) * 18;
+    const y = ((event.clientY - bounds.top) / bounds.height - .5) * 14;
+    chemistry.style.setProperty('--chem-x', `${x}px`);
+    chemistry.style.setProperty('--chem-y', `${y}px`);
+  });
+  pageHero.addEventListener('pointerleave', () => {
+    chemistry.style.setProperty('--chem-x', '0px');
+    chemistry.style.setProperty('--chem-y', '0px');
+  });
+}
+
 document.querySelectorAll('[data-pathway]').forEach((pathway) => {
   const steps = [...pathway.querySelectorAll('[data-pathway-step]')];
   const detail = pathway.querySelector('[data-pathway-detail]:not([data-pathway-step])');

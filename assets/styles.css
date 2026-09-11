@@ -197,12 +197,12 @@ button, input, textarea { font: inherit; }
   animation-play-state: paused;
 }
 .orbit-card::before { width: 360px; height: 360px; }
-.orbit-card::after { width: 255px; height: 255px; animation-direction: reverse; animation-duration: 11s; }
+.orbit-card::after { width: 255px; height: 255px; animation-direction: reverse; animation-duration: 7s; }
 .peptide-ring {
   width: min(100%, 360px);
   filter: drop-shadow(0 30px 70px rgba(0,0,0,0.34));
   transform-origin: center;
-  animation: peptide-float 10s ease-in-out infinite;
+  animation: peptide-float 5.8s ease-in-out infinite;
   animation-play-state: paused;
   will-change: transform;
 }
@@ -219,6 +219,27 @@ button, input, textarea { font: inherit; }
 .peptide-ring .bond line:nth-child(5) { animation-delay: 2.8s; }
 .peptide-ring .bond line:nth-child(6) { animation-delay: 3.5s; }
 .peptide-ring .bond line:nth-child(7) { animation-delay: 4.2s; }
+.peptide-ring .energy-track {
+  fill: none;
+  stroke: rgba(98,229,255,0.18);
+  stroke-width: 1;
+  stroke-dasharray: 5 10;
+  animation: energy-track 5s linear infinite;
+  animation-play-state: paused;
+}
+.peptide-signal {
+  fill: var(--maize);
+  filter: drop-shadow(0 0 7px rgba(255,203,5,.95));
+  offset-path: path("M210 48 L337 110 L368 250 L280 358 L140 358 L52 250 L83 110 Z");
+  offset-rotate: 0deg;
+  animation: peptide-signal 5.2s linear infinite;
+  animation-play-state: paused;
+}
+.peptide-signal-two {
+  fill: var(--cyan);
+  filter: drop-shadow(0 0 6px rgba(98,229,255,.9));
+  animation-delay: -2.6s;
+}
 .peptide-ring .node { fill: var(--ink-soft); stroke: var(--cyan); stroke-width: 2; }
 .peptide-ring .hot { stroke: var(--maize); }
 .peptide-ring > g:not(.bond) {
@@ -237,6 +258,8 @@ button, input, textarea { font: inherit; }
 .orbit-card.is-visible::after,
 .orbit-card.is-visible .peptide-ring,
 .orbit-card.is-visible .peptide-ring .bond line,
+.orbit-card.is-visible .peptide-ring .energy-track,
+.orbit-card.is-visible .peptide-signal,
 .orbit-card.is-visible .peptide-ring > g:not(.bond) {
   animation-play-state: running;
 }
@@ -245,9 +268,12 @@ button, input, textarea { font: inherit; }
 }
 @keyframes drift { to { transform: rotate(360deg); } }
 @keyframes peptide-float {
-  0%, 100% { transform: translateY(0) rotate(-1.1deg); }
-  50% { transform: translateY(-8px) rotate(1.1deg); }
+  0%, 100% { transform: translate3d(-3px,2px,0) rotate(-2deg) scale(.985); }
+  35% { transform: translate3d(5px,-11px,0) rotate(1.5deg) scale(1.018); }
+  68% { transform: translate3d(-5px,-5px,0) rotate(.3deg) scale(1.005); }
 }
+@keyframes energy-track { to { stroke-dashoffset: -60; } }
+@keyframes peptide-signal { to { offset-distance: 100%; } }
 @keyframes bond-pulse {
   0%, 18%, 100% { stroke: rgba(98,229,255,0.34); stroke-width: 2; }
   7% { stroke: rgba(255,203,5,0.95); stroke-width: 3.4; }
@@ -256,6 +282,53 @@ button, input, textarea { font: inherit; }
   0%, 18%, 100% { transform: scale(1); filter: brightness(1); }
   7% { transform: scale(1.045); filter: brightness(1.28); }
 }
+
+/* Dynamic molecular signatures for inner-page headers */
+.header-chemistry {
+  --chem-x: 0px;
+  --chem-y: 0px;
+  position: absolute;
+  z-index: 0;
+  width: min(45vw, 610px);
+  right: max(1rem, calc((100vw - var(--max)) / 2));
+  top: 50%;
+  opacity: .72;
+  pointer-events: none;
+  transform: translate3d(var(--chem-x), calc(-50% + var(--chem-y)), 0);
+  transition: transform 500ms cubic-bezier(.2,.7,.2,1);
+}
+.header-chemistry svg { width: 100%; overflow: visible; }
+.chem-bond, .chem-ring, .chem-carbonyl {
+  fill: none;
+  stroke: rgba(98,229,255,.48);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.chem-ring { stroke: rgba(255,255,255,.2); }
+.chem-carbonyl { stroke: rgba(255,203,5,.7); }
+.chem-trace {
+  fill: none;
+  stroke: rgba(98,229,255,.62);
+  stroke-width: 2;
+  stroke-dasharray: 8 12;
+  animation: chemistry-flow 7s linear infinite;
+}
+.chem-atom { fill: var(--ink); stroke: var(--maize); stroke-width: 2; }
+.chem-atom-cyan { stroke: var(--cyan); }
+.chem-label { fill: rgba(255,255,255,.82); font: 750 14px/1 var(--mono); text-anchor: middle; dominant-baseline: central; }
+.chem-pulse { fill: var(--maize); filter: drop-shadow(0 0 8px rgba(255,203,5,.9)); offset-path: path("M42 192 L96 98 L204 98 L258 192 L204 286 L96 286 Z M258 192 L326 192 L362 130 M326 192 L384 226 L450 188"); offset-rotate: 0deg; animation: chemistry-pulse 8s linear infinite; }
+.chem-pulse-two { fill: var(--cyan); animation-delay: -4s; }
+.chem-core { transform-box: fill-box; transform-origin: center; animation: chemistry-breathe 4.6s ease-in-out infinite; }
+.page-hero[data-chemistry="publications"] .header-chemistry { opacity: .64; transform: translate3d(var(--chem-x), calc(-50% + var(--chem-y)), 0) rotate(-6deg); }
+.page-hero[data-chemistry="writing"] .chem-carbonyl, .page-hero[data-chemistry="impact"] .chem-carbonyl { stroke: rgba(255,203,5,.92); }
+.page-hero[data-chemistry="about"] .header-chemistry { opacity: .62; }
+.page-hero[data-chemistry="contact"] .chem-trace { animation-duration: 4.5s; }
+.page-hero[data-chemistry="media"] .header-chemistry { opacity: .58; }
+@keyframes chemistry-flow { to { stroke-dashoffset: -80; } }
+@keyframes chemistry-pulse { to { offset-distance: 100%; } }
+@keyframes chemistry-breathe { 0%,100% { transform: scale(.98); } 50% { transform: scale(1.025); } }
 
 .section { padding: clamp(5rem, 9vw, 9rem) max(1rem, calc((100vw - var(--max)) / 2)); }
 .section.dark { background: var(--ink); color: var(--white); }
@@ -458,6 +531,7 @@ button, input, textarea { font: inherit; }
 [data-reveal].visible { opacity: 1; transform: translateY(0); }
 
 @media (max-width: 900px) {
+  .page-hero[data-chemistry] .header-chemistry { width: min(82vw, 500px); right: -24vw; top: 45%; opacity: .43; }
   .menu-toggle { display: block; }
   .nav-links { display: none; position: absolute; inset: 74px 0 auto; padding: 1.5rem 1rem 2rem; background: var(--ink); flex-direction: column; align-items: flex-start; }
   .nav-links.open { display: flex; }
@@ -482,6 +556,7 @@ button, input, textarea { font: inherit; }
 }
 
 @media (max-width: 600px) {
+  .page-hero[data-chemistry] .header-chemistry { width: 104vw; right: -52vw; top: 40%; opacity: .36; }
   .hero { padding-top: 7rem; }
   .hero h1 { max-width: 100%; font-size: clamp(3rem, 16vw, 4.5rem); line-height: 0.88; letter-spacing: -0.08em; }
   .hero .eyebrow { position: relative; display: block; max-width: 100%; padding-left: 2.1rem; font-size: 0.7rem; line-height: 1.75; letter-spacing: 0.13em; }

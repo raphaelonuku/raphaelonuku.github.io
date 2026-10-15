@@ -16,14 +16,12 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,16 +31,37 @@ jobs:
           node-version: 22
       - name: Build writing pages
         run: npm run build
+      - name: Check content rendering
+        run: npm test
+      - name: Restore writing studio
+        id: studio-cache
+        uses: actions/cache@v4
+        with:
+          path: dist/studio
+          key: studio-v2-${{ runner.os }}-${{ hashFiles('sanity-studio/package-lock.json', 'sanity-studio/**/*.js', 'sanity-studio/*.mjs') }}
       - name: Install writing studio
+        if: steps.studio-cache.outputs.cache-hit != 'true'
         run: npm ci --prefix sanity-studio
       - name: Build writing studio
+        if: steps.studio-cache.outputs.cache-hit != 'true'
         run: npm run build --prefix sanity-studio
+      - name: Preserve Studio sign-in and refresh routes
+        working-directory: sanity-studio
+        run: node patch-base-path.mjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

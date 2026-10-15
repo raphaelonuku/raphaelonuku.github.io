@@ -52,8 +52,14 @@ export function portableTextToHtml(blocks = []) {
     if (["h2", "h3", "h4"].includes(block.style)) output.push(`<${block.style}>${content}</${block.style}>`);
     else if (block.style === "blockquote") output.push(`<blockquote><p>${content}</p></blockquote>`);
     else {
-      const paragraphs = content.split(/<br\s*\/?\s*>/i).filter(value => value.trim());
-      output.push((paragraphs.length ? paragraphs : [""]).map(value => `<p>${value}</p>`).join("\n"));
+      const paragraphs = [''];
+      for (const span of block.children || []) {
+        String(span.text || '').split(/\r?\n/).forEach((line, index) => {
+          if (index) paragraphs.push('');
+          if (line) paragraphs[paragraphs.length - 1] += renderSpan({ ...span, text: line }, block.markDefs || []);
+        });
+      }
+      for (const paragraph of paragraphs.filter(value => value.trim())) output.push(`<p>${paragraph}</p>`);
     }
   }
   flushList();
@@ -66,8 +72,18 @@ export function portableTextToHtml(blocks = []) {
 export async function fetchSanityWriting() {
   const query = `*[_type == "writing" && !(_id in path("drafts.**"))] | order(publishedAt desc, _createdAt desc){_id,_createdAt,title,subtitle,category,series,publishedAt,summary,slug,body[]{...,_type == "image" => {"url": asset->url,alt}},"image": image.asset->url,"image_alt": image.alt,"social_image": socialImage.asset->url}`;
   const endpoint = `https://${PROJECT_ID}.api.sanity.io/v${API_VERSION}/data/query/${DATASET}?query=${encodeURIComponent(query)}`;
-  const response = await fetch(endpoint, { headers: { Accept: "application/json" } });
-  if (!response.ok) throw new Error(`Sanity returned ${response.status}`);
-  const payload = await response.json();
-  return Array.isArray(payload.result) ? payload.result : [];
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const response = await fetch(endpoint, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(15000) });
+      if (!response.ok) throw new Error(`Sanity returned ${response.status}`);
+      const payload = await response.json();
+      if (!Array.isArray(payload.result)) throw new Error('Sanity did not return an article list');
+      return payload.result;
+    } catch (error) {
+      lastError = error;
+      if (attempt < 2) await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+    }
+  }
+  throw lastError;
 }

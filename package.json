@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-writing.mjs",
-    "build:writing": "node scripts/build-writing.mjs"
+    "build": "node scripts/prepare-site.mjs && node scripts/build-writing.mjs && node scripts/finalize-site.mjs && node scripts/validate-site.mjs",
+    "build:writing": "npm run build",
+    "test": "node --test scripts/site.test.mjs",
+    "check:live": "node scripts/check-live.mjs"
   }
 }

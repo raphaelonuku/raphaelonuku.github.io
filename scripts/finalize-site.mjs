@@ -11,7 +11,7 @@ async function visit(directory) {
     if (entry.isDirectory()) { await visit(path); continue; }
     if (!entry.name.endsWith('.html') || entry.name === '404.html') continue;
     let html = await readFile(path, 'utf8');
-    html = html.replace(/styles\.css(?:\?v=[^"']*)?/g, 'styles.css?v=fieldnotes20261103b');
+    html = html.replace(/styles\.css(?:\?v=[^"']*)?/g, 'styles.css?v=fieldnotes20261103c');
     const title = unescape(html.match(/<title>([\s\S]*?)<\/title>/i)?.[1] || 'Raphael Onuku');
     const description = unescape(html.match(/<meta name="description" content="([^"]*)"/i)?.[1] || 'Peptides for anti-infective drug discovery.');
     const page = relative('dist', path).replaceAll('\\', '/').replace(/index\.html$/, '');

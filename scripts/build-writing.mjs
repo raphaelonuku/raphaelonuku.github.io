@@ -289,12 +289,13 @@ function writingIndex(articles) {
 <body class="writing-index"><a class="skip-link" href="#main">Skip to content</a>${nav("../")}<main id="main"><header class="page-hero writing-hero"><div class="writing-intro"><p class="eyebrow">Writing</p><h1>Ideas worth sharing.</h1><p class="intro">Reflections on opportunity, mentorship, science, community, and the experiences that shape a life. This is also where I share announcements that may help others move forward.</p></div></header>${featured ? `<section class="section"><p class="kicker">Featured writing</p>${card(featured, true)}</section>` : ""}${archive}<section class="section blue"><div class="section-head"><p class="kicker">The notebook</p><div><h2>Experience becomes useful when it is shared.</h2><p class="section-lede">This collection will grow across personal reflections, mentorship, science and society, community work, and timely announcements.</p><div class="writing-categories" aria-label="Writing categories"><span>Reflections</span><span>Experiences</span><span>Mentorship</span><span>Science and Society</span><span>Community</span><span>Announcements</span></div></div></div></section></main><footer class="footer"><div class="footer-call"><h2>Words can become <span>direction.</span></h2><a class="button primary" href="../contact/">Start a conversation <span class="arrow">↗</span></a></div><div class="footer-meta"><span>Raphael Onuku</span>${socials("../")}<span>© <span data-year></span></span></div></footer><script src="../assets/site.js?v=20261015"></script></body></html>`;
 }
 
-async function updateHomepage(featured) {
+async function updateHomepage(articles) {
   const homepagePath = join(ROOT, "dist", "index.html");
   let homepage = await readFile(homepagePath, "utf8");
   const start = "<!-- WRITING_FEATURE_START -->";
   const end = "<!-- WRITING_FEATURE_END -->";
-  const block = featured ? `${start}\n    <section class="section writing-teaser"><div class="writing-teaser-grid" data-reveal><p class="kicker">Latest writing · ${escapeHtml(featured.category)}</p><div><h2>${escapeHtml(featured.title)}</h2><p>${escapeHtml(featured.summary)}</p><a class="button" href="writing/${featured.slug}/">Continue reading <span class="arrow">↗</span></a></div></div></section>\n    ${end}` : `${start}\n${end}`;
+  const rows = articles.slice(0, 3).map(article => `<a class="fieldnotes-essay" href="writing/${article.slug}/"><div><span>${escapeHtml(article.category)}</span><h3>${escapeHtml(article.title)}</h3></div><b aria-hidden="true">↗</b></a>`).join("");
+  const block = `${start}<section class="section fieldnotes-home-columns"><div><p class="fieldnotes-label">SELECTED SCHOLARSHIP</p><h2>Publications</h2><a class="fieldnotes-publication" href="https://doi.org/10.1002/advs.202506336"><span>2025</span><div><h3>Contribution of prostaglandin E2-induced neuronal excitation to drug resistance in glioblastoma countered by a novel blood-brain barrier crossing celecoxib derivative</h3><p>Advanced Science</p></div><b aria-hidden="true">↗</b></a><a class="fieldnotes-link" href="publications/">All publications ↗</a></div><div><p class="fieldnotes-label">THE NOTEBOOK</p><h2>Writing</h2>${rows}<a class="fieldnotes-link" href="writing/">All writing ↗</a></div></section>${end}`;
   const pattern = new RegExp(`${start}[\\s\\S]*?${end}`);
   if (!pattern.test(homepage)) throw new Error("Homepage writing markers are missing");
   await writeFile(homepagePath, homepage.replace(pattern, block));
@@ -338,7 +339,7 @@ async function main() {
     await writeFile(join(articleDir, "index.html"), articlePage(article));
   }
   await writeFile(join(OUTPUT_DIR, "index.html"), writingIndex(articles));
-  await updateHomepage(articles[0]);
+  await updateHomepage(articles);
   await writeSearchFiles(articles);
   await writeFile(join(ROOT, 'dist', 'build-info.json'), JSON.stringify({ builtAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || 'local', articleCount: articles.length, slugs: articles.map(article => article.slug) }, null, 2));
   console.log(`Built ${articles.length} published writing entr${articles.length === 1 ? "y" : "ies"}`);
